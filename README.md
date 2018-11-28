@@ -2,7 +2,7 @@
 This repo controls the Ansible Role for ElasticSearch cluster installation.
 
 # Dependencies
-pyhton
+pyhton  
 Java 1.8 or greater 
 
 # Variables/Default for elasticsearch
@@ -50,7 +50,7 @@ esc: is client node information
 # Example Playbook
 
 ```
-- hosts: "{{ host }}"
+- hosts: es
   roles:
      - { role: osm_elasticSearch_cluster }
 ```
