@@ -1,0 +1,10 @@
+---
+- name: Create elasticsearch configuration files.
+  template:
+    src: "{{ item.name }}"
+    dest: "{{ item.path }}"
+  with_items:
+      - { name: 'elasticsearch.yml.j2', path: '/etc/elasticsearch/elasticsearch.yml' }
+      - { name: 'jvm.options.j2', path: '/etc/elasticsearch/jvm.options' }
+  notify:
+    - restart elasticsearch

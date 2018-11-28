@@ -1,0 +1,15 @@
+---
+elasticsearch_version: "6.5.1"
+cluster_name: es-cluster
+
+es_jvm_dump: /var/lib/elasticsearch/heap
+data_path: /var/lib/elasticsearch
+log_path: /var/log/elasticsearch
+
+elasticsearchIP: "0.0.0.0"
+http_port: 9200
+tcp_port: 9300
+zen_host: "[\"{{ groups['esm'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join('\",\"') }}\"]"
+
+min_heap: "{{ ansible_memtotal_mb // 2 }}m"
+max_heap: "{{ ansible_memtotal_mb // 2 }}m"

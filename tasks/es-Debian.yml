@@ -1,0 +1,32 @@
+---
+## Install apt-transports package required for Installation of Elasticsearch
+#- name: install apt-transports
+#  apt: name=apt-transport-https state=present
+#
+## checking if elasticsearch is already installed
+#- name: Check if elasticsearch is already installed.
+#  stat: path=/etc/init.d/elasticsearch
+#  register: elasticsearch_installed
+#
+## updating apt-cache
+#- name: Update apt cache if repository just added.
+#  apt: update_cache=yes
+#  when: elasticsearch_installed.stat.exists == false
+#
+## Download elasticsearch
+#- name: Download deb.
+#  get_url: url=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ elasticsearch_version }}.deb dest=/tmp/elasticsearch-{{ elasticsearch_version }}.deb
+#
+## Install deb file elasticsearch
+#- name: install elasticsearch
+#  apt: deb=/tmp/elasticsearch-{{ elasticsearch_version }}.deb 
+#  notify:
+#   - restart elasticsearch
+#
+## Create heap dump directory
+#- name: Create heap dump directory
+#  file: path={{ es_jvm_dump }} state=directory
+#
+## Enable elaticsearch
+#- name: Enable elasticsearch
+#  systemd: name=elasticsearch enabled=yes

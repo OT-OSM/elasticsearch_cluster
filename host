@@ -1,0 +1,13 @@
+[es:children]
+esm
+esd
+esc
+[esm]
+64.627.16.131 ansible_ssh_user=ubuntu
+103.23.36.76 ansible_ssh_user=ubuntu
+61.211.23.11 ansible_ssh_user=ubuntu
+[esd]
+54.147.131.37 ansible_ssh_user=ubuntu
+45.62.49.102 ansible_ssh_user=ubuntu
+[esc]
+100.26.208.53 ansible_ssh_user=ubuntu
