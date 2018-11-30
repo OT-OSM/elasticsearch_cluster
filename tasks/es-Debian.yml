@@ -20,13 +20,13 @@
 # Install deb file elasticsearch
 - name: install elasticsearch
   apt: deb=/tmp/elasticsearch-{{ elasticsearch_version }}.deb 
-  notify:
-   - restart elasticsearch
 
 # Create heap dump directory
 - name: Create heap dump directory
   file: path={{ es_jvm_dump }} state=directory
+  notify:
+   - restart elasticsearch
 
 # Enable elaticsearch
 - name: Enable elasticsearch
-  systemd: name=elasticsearch enabled=yes
+  service: name=elasticsearch enabled=yes
