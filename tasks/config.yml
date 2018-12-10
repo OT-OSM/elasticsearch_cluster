@@ -1,4 +1,18 @@
 ---
+- name: Configure elasticsearch service and environment
+  template:
+    src: "{{ item.name }}"
+    dest: "{{ item.path }}"
+  with_items:
+      - { name: 'limit.conf.j2', path: '/etc/security/limit.conf' }
+      - { name: 'elasticsearch.service.j2', path: '/usr/lib/systemd/system/elasticsearch.service' }
+  notify:
+    - reload systemd
+    - restart elasticsearch
+
+- name: enable open file witout restart
+  shell: "ulimit -n 4096"
+
 - name: Create elasticsearch configuration files.
   template:
     src: "{{ item.name }}"

@@ -1,0 +1,39 @@
+---
+# install libselinux-python on centos7
+- name: Install net-tools
+  yum: name=net-tools
+
+# Set vm.swappiness to 1 in /etc/sysctl.conf
+- sysctl:
+    name: vm.swappiness
+    value: 1
+    state: present
+
+# Set virtual max area /etc/sysctl.conf
+- sysctl:
+    name: vm.max_map_count
+    value: 2621444
+    state: present
+    reload: true
+
+# Download elasticsearch
+- name: Download rpm.
+  get_url: url=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ elasticsearch_version }}.rpm dest=/tmp/elasticsearch-{{ elasticsearch_version }}.rpm
+
+# Install rpm file elasticsearch
+- name: install elasticsearch
+  yum: name=/tmp/elasticsearch-{{ elasticsearch_version }}.rpm state=present
+  notify:
+   - restart elasticsearch
+
+# Create heap dump directory
+- name: Create heap dump directory
+  file: path={{ es_jvm_dump }} state=directory
+
+# Enable elaticsearch
+- name: Enable elasticsearch
+  systemd: name=elasticsearch enabled=yes
+
+# Start elasticsearch
+- name: Starting Elasticsearch service
+  service: name=elasticsearch state=started

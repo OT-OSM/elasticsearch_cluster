@@ -1,6 +1,15 @@
 # osm_elasticSearch_Cluster
 This repo controls the Ansible Role for ElasticSearch cluster installation.
 
+# Supported OS  
+
+```
+Redhat 7
+Centos 7
+Ubuntu 14/16
+Amazon Linux
+```
+
 # Dependencies
 pyhton  
 Java 1.8 or greater 
