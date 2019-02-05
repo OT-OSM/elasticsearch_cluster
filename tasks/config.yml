@@ -1,4 +1,5 @@
 ---
+# update environment for elasticsearch  
 - name: Configure elasticsearch service and environment
   template:
     src: "{{ item.name }}"
@@ -10,9 +11,7 @@
     - reload systemd
     - restart elasticsearch
 
-- name: enable open file witout restart
-  shell: "ulimit -n 4096"
-
+# update elasticsearch config files
 - name: Create elasticsearch configuration files.
   template:
     src: "{{ item.name }}"
