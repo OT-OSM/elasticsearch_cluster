@@ -1,5 +1,5 @@
 ---
-# update environment for elasticsearch  
+# update environment for elasticsearch
 - name: Configure elasticsearch service and environment
   template:
     src: "{{ item.name }}"
