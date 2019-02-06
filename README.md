@@ -60,7 +60,7 @@ esc: is client node information
 ```
 - hosts: es
   roles:
-     - { role: osm_elasticSearch_cluster }
+     - { role: osm_elasticsearch_cluster }
 ```
 
 # License
