@@ -11,6 +11,10 @@
     - reload systemd
     - restart elasticsearch
 
+# enable openfile limit without restart
+- name: enable open file witout restart
+  shell: "ulimit -n 4096"
+
 # update elasticsearch config files
 - name: Create elasticsearch configuration files.
   template:
