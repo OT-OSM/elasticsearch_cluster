@@ -1,0 +1,49 @@
+---
+# Set vm.swappiness to 1 in /etc/sysctl.conf
+- sysctl:
+    name: vm.swappiness
+    value: "{{ swapness }}"
+    state: present
+
+# Set virtual max area /etc/sysctl.conf
+- sysctl:
+    name: vm.max_map_count
+    value: "{{ vm_max_count }}"
+    state: present
+
+# Install apt-transports package required for Installation of Elasticsearch
+- name: install apt-transports
+  apt: name=apt-transport-https state=present update_cache=yes
+
+# Download elasticsearch
+- name: Download deb.
+  get_url:
+    url: https://artifacts.elastic.co/downloads/{{ esurl }}.deb
+    dest: /tmp/elasticsearch-{{ elasticsearch_version }}.deb
+
+# enable openfile limit without restart
+- name: enable open file witout restart
+  shell: "ulimit -n 4096"
+
+# Install deb file elasticsearch
+- name: install elasticsearch
+  apt: deb=/tmp/elasticsearch-{{ elasticsearch_version }}.deb
+
+# Create directory for es_data and heap_dump storage
+- name: Create data_path directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    mode: 0775
+    recurse: yes
+  with_items:
+    - "{{ data_path }}"
+    - "{{ es_jvm_dump }}"
+  notify:
+    - restart elasticsearch
+
+# Enable elaticsearch
+- name: Enable elasticsearch
+  service: name=elasticsearch enabled=yes

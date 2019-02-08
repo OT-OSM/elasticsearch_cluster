@@ -1,0 +1,9 @@
+---
+elasticsearch_version: "6.5.1"
+cluster_name: "es-cluster"
+
+# es_jvm_dump: /var/lib/elasticsearch/heap
+# data_path: /var/lib/elasticsearch
+# log_path: /var/log/elasticsearch
+
+# esIP: "0.0.0.0"

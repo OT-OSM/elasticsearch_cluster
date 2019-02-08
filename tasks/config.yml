@@ -1,0 +1,23 @@
+---
+# update environment for elasticsearch
+- name: Configure elasticsearch service and environment
+  template:
+    src: "{{ item.name }}"
+    dest: "{{ item.path }}"
+  with_items:
+    - {name: 'limit.conf.j2', path: '/etc/security/limits.d/{{ es }}.conf'}
+    - {name: '{{ es_s }}.j2', path: '/usr/lib/systemd/system/{{ es_s }}'}
+  notify:
+    - reload systemd
+    - restart elasticsearch
+
+# update elasticsearch config files
+- name: Create elasticsearch configuration files.
+  template:
+    src: "{{ item.name }}"
+    dest: "{{ item.path }}"
+  with_items:
+    - {name: '{{ es }}.yml.j2', path: '/etc/elasticsearch/{{ es }}.yml'}
+    - {name: 'jvm.options.j2', path: '/etc/elasticsearch/jvm.options'}
+  notify:
+    - restart elasticsearch

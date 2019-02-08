@@ -1,0 +1,27 @@
+---
+elasticsearch_version: "6.5.1"
+cluster_name: es-cluster
+
+# Static value ####
+esurl: "elasticsearch/elasticsearch-{{ elasticsearch_version }}"
+es_s: "elasticsearch.service"
+es: "elasticsearch"
+# Static value end #####
+
+es_jvm_dump: /var/lib/elasticsearch/heap
+data_path: /var/lib/elasticsearch
+log_path: /var/log/elasticsearch
+
+esIP: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+http_port: 9200
+tcp_port: 9300
+zen_host: "[\"{{ groups['esm'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join('\",\"') }}\"]"
+
+min_heap: "{{ ansible_memtotal_mb // 2 }}m"
+max_heap: "{{ ansible_memtotal_mb // 2 }}m"
+
+m_lock: "true"
+nofile_limit: "65536"
+nproc_limit: "5000"
+swapness: "1"
+vm_max_count: "2621444"

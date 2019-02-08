@@ -1,0 +1,26 @@
+---
+# tasks file for logstash
+
+- name: Include OS Specific setup tasks
+  include_tasks: es-{{ ansible_os_family }}.yml
+
+- include_tasks: config.yml
+  vars:
+   - node_name: master
+   - node_master: "true"
+   - node_data: "false"
+  when: "'esm' in group_names"
+
+- include_tasks: config.yml
+  vars:
+   - node_name: data
+   - node_master: "false"
+   - node_data: "true"
+  when: "'esd' in group_names"
+
+- include_tasks: config.yml
+  vars:
+   - node_name: client
+   - node_master: "false"
+   - node_data: "false"
+  when: "'esc' in group_names"
