@@ -48,11 +48,11 @@ Client node configuration is Optional, if required add below info in host/invent
 [esc]
 100.26.208.53 ansible_ssh_user=ubuntu
 ```
-Where,
-es: is cluster group name
-esm: is master node information
-esd: is data node information
-esc: is client node information
+Where,  
+es: is cluster group name  
+esm: is master node information  
+esd: is data node information  
+esc: is client node information  
 
 # Example Playbook
 
