@@ -28,7 +28,7 @@ cluster_name: es-cluster
 ```
 
 # Node defination:
-Define your type of nodes in host/inventory file based on below format. 
+Define your type of nodes in host/inventory file based on below format. Can increase the node counts as much you want. 
 
 ```
 [es:children]
@@ -42,8 +42,6 @@ esc
 [esd]
 54.147.131.37 ansible_ssh_user=ubuntu
 45.62.49.102 ansible_ssh_user=ubuntu
-[esc]
-100.26.208.53 ansible_ssh_user=ubuntu
 ```
 Client node configuration is Optional, if required add below info in host/inventory file:
 ```
