@@ -5,15 +5,11 @@
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
   with_items:
-      - { name: 'limit.conf.j2', path: '/etc/security/limit.conf' }
-      - { name: 'elasticsearch.service.j2', path: '/usr/lib/systemd/system/elasticsearch.service' }
+    - {name: 'limit.conf.j2', path: '/etc/security/limits.d/{{ es }}.conf'}
+    - {name: '{{ es_s }}.j2', path: '/usr/lib/systemd/system/{{ es_s }}'}
   notify:
     - reload systemd
     - restart elasticsearch
-
-# enable openfile limit without restart
-- name: enable open file witout restart
-  shell: "ulimit -n 4096"
 
 # update elasticsearch config files
 - name: Create elasticsearch configuration files.
@@ -21,7 +17,7 @@
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
   with_items:
-      - { name: 'elasticsearch.yml.j2', path: '/etc/elasticsearch/elasticsearch.yml' }
-      - { name: 'jvm.options.j2', path: '/etc/elasticsearch/jvm.options' }
+    - {name: '{{ es }}.yml.j2', path: '/etc/elasticsearch/{{ es }}.yml'}
+    - {name: 'jvm.options.j2', path: '/etc/elasticsearch/jvm.options'}
   notify:
     - restart elasticsearch

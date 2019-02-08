@@ -5,7 +5,6 @@ This repo controls the Ansible Role for ElasticSearch cluster installation.
 
 ```
 Redhat 7
-Centos 7
 Ubuntu 14/16
 Amazon Linux
 ```

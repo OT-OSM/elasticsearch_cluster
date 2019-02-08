@@ -2,4 +2,4 @@
 - hosts: es
   become: true
   roles:
-    - { role: osm_elasticsearch_cluster }
+    - elasticsearch_cluster

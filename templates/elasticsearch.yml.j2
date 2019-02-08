@@ -20,7 +20,7 @@ cluster.name: {{ cluster_name }}
 #
 # Use a descriptive name for the node:
 #
-node.name: {{ elasticsearchIP }}-{{ node_name }}
+node.name: {{ esIP }}-{{ node_name }}
 node.master: {{ node_master }}
 node.data: {{ node_data }}
 #
@@ -55,7 +55,7 @@ bootstrap.memory_lock: {{ m_lock }}
 #
 # Set the bind address to a specific IP (IPv4 or IPv6):
 #
-network.host: {{ elasticsearchIP }}
+network.host: {{ esIP }}
 #
 # Set a custom port for HTTP:
 #

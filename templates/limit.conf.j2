@@ -42,13 +42,13 @@
 #
 #<domain>      <type>  <item>         <value>
 
-*               soft     nofile          {{ nofile_limit }}
-*               hard     nofile          {{ nofile_limit }}
-*               soft     nproc           {{ nproc_limit }}
-*               hard     nproc           {{ nproc_limit }}
+{{ es }}        soft     nofile          {{ nofile_limit }}
+{{ es }}        hard     nofile          {{ nofile_limit }}
+{{ es }}        soft     nproc           {{ nproc_limit }}
+{{ es }}        hard     nproc           {{ nproc_limit }}
 
-* soft memlock unlimited
-* hard memlock unlimited
+{{ es }} soft memlock unlimited
+{{ es }} hard memlock unlimited
 #
 
 #*               soft    core            0

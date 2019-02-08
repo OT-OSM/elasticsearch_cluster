@@ -30,10 +30,10 @@ StandardOutput=journal
 StandardError=inherit
 
 # Specifies the maximum file descriptor number that can be opened by this process
-LimitNOFILE=65536
+LimitNOFILE={{ nofile_limit }}
 
 # Specifies the maximum number of processes
-LimitNPROC=4096
+LimitNPROC={{ nproc_limit }}
 
 # Specifies the maximum size of virtual memory
 LimitAS=infinity
