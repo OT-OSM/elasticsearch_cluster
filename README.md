@@ -24,7 +24,7 @@ cluster_name: es-cluster
 #data_path: /var/lib/elasticsearch
 #log_path: /var/log/elasticsearch
 
-#elasticsearchIP: "0.0.0.0"
+#esIP: "0.0.0.0"
 ```
 
 # Node defination:
