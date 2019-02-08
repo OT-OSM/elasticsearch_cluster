@@ -1,7 +1,0 @@
-[es:children]
-esm
-esd
-[esm]
-3.92.20.66 ansible_ssh_user=ubuntu
-[esd]
-3.89.241.234 ansible_ssh_user=ec2-user
