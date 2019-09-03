@@ -1,5 +1,6 @@
 ---
 elasticsearch_version: "6.5.1"
+es_v: "6"
 cluster_name: es-cluster
 
 # Static value ####

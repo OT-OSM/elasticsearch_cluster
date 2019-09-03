@@ -5,8 +5,8 @@
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
   with_items:
-    - {name: 'limit.conf.j2', path: '/etc/security/limits.d/{{ es }}.conf'}
-    - {name: '{{ es_s }}.j2', path: '/usr/lib/systemd/system/{{ es_s }}'}
+    - {name: "limit.conf.j2", path: "/etc/security/limits.d/{{ es }}.conf"}
+    - {name: "{{ es_s }}.j2", path: "/usr/lib/systemd/system/{{ es_s }}"}
   notify:
     - reload systemd
     - restart elasticsearch
@@ -17,7 +17,7 @@
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
   with_items:
-    - {name: '{{ es }}.yml.j2', path: '/etc/elasticsearch/{{ es }}.yml'}
-    - {name: 'jvm.options.j2', path: '/etc/elasticsearch/jvm.options'}
+    - {name: "{{ es }}-{{ elasticsearch_version }}.yml.j2", path: "/etc/elasticsearch/{{ es }}.yml"}
+    - {name: "jvm-{{ elasticsearch_version }}.options.j2", path: "/etc/elasticsearch/jvm.options"}
   notify:
     - restart elasticsearch

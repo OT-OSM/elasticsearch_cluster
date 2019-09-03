@@ -1,5 +1,5 @@
 ---
-elasticsearch_version: "6.5.1"
+elasticsearch_version: "7"
 cluster_name: "es-cluster"
 
 # es_jvm_dump: /var/lib/elasticsearch/heap

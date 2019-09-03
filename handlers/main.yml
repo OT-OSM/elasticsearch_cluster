@@ -1,7 +1,9 @@
 ---
 # handlers file for elasticsearch
 - name: restart elasticsearch
-  service: name=elasticsearch state=restarted
+  systemd:
+    name: elasticsearch
+    state: restarted
 
 # reload systemd after modification
 - name: reload systemd

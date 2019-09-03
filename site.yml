@@ -1,5 +1,5 @@
 ---
-- hosts: es
+- hosts: localhost
   become: true
   roles:
-    - elasticsearch_cluster
+    - ../osm_elasticsearch_cluster

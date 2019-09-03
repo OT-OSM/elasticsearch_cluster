@@ -16,18 +16,43 @@
   apt: name=apt-transport-https state=present update_cache=yes
 
 # Download elasticsearch
-- name: Download deb.
-  get_url:
-    url: https://artifacts.elastic.co/downloads/{{ esurl }}.deb
-    dest: /tmp/elasticsearch-{{ elasticsearch_version }}.deb
+#- name: Download deb bellow 7
+#  get_url:
+#    url: https://artifacts.elastic.co/downloads/{{ esurl }}.deb
+#    dest: /tmp/elasticsearch-{{ elasticsearch_version }}.deb
+#  when: elasticsearch_version is version('6.9.9', '<=')
+
+#- name: Download deb for above 7
+#  get_url:
+#    url: https://artifacts.elastic.co/downloads/{{ esurl }}-amd64.deb
+#    dest: /tmp/elasticsearch-{{ elasticsearch_version }}.deb
+#  when: elasticsearch_version is version('7.0.0', '>=')
+- name: Add elasticsearch repository...
+  apt_repository:
+    repo: 'deb https://artifacts.elastic.co/packages/{{ elasticsearch_version }}.x/apt stable main'
+    state: present
+
+- name: Update cache...
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+  tags:
+    - test
+
+- name: Installing elasticsearch
+  apt:
+    name: elasticsearch
+    state: present
+    update_cache: yes
+
 
 # enable openfile limit without restart
 - name: enable open file witout restart
   shell: "ulimit -n 4096"
 
 # Install deb file elasticsearch
-- name: install elasticsearch
-  apt: deb=/tmp/elasticsearch-{{ elasticsearch_version }}.deb
+#- name: install elasticsearch
+#  apt: deb=/tmp/elasticsearch-{{ elasticsearch_version }}.deb
 
 # Create directory for es_data and heap_dump storage
 - name: Create data_path directory
@@ -45,5 +70,10 @@
     - restart elasticsearch
 
 # Enable elaticsearch
-- name: Enable elasticsearch
-  service: name=elasticsearch enabled=yes
+#- name: Enable elasticsearch
+#  service: name=elasticsearch enabled=yes
+- name: enable elasticsearch
+  systemd:
+    name: elasticsearch
+    state: started
+    enabled: yes
