@@ -1,13 +1,12 @@
-[es:children]
-esm
-esd
-esc
+[es]
+157.245.98.55 ansible_ssh_user=root
+157.245.105.239 ansible_ssh_user=root
+157.245.106.36 ansible_ssh_user=root
 [esm]
-64.627.16.131 ansible_ssh_user=ubuntu
-103.23.36.76 ansible_ssh_user=ubuntu
-61.211.23.11 ansible_ssh_user=ubuntu
+157.245.98.55 ansible_ssh_user=root
+157.245.105.239 ansible_ssh_user=root
 [esd]
-54.147.131.37 ansible_ssh_user=ubuntu
-45.62.49.102 ansible_ssh_user=ubuntu
+157.245.105.239 ansible_ssh_user=root
+157.245.98.55 ansible_ssh_user=root
 [esc]
-100.26.208.53 ansible_ssh_user=ubuntu
+157.245.106.36 ansible_ssh_user=root

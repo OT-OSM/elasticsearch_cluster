@@ -11,6 +11,10 @@
     value: "{{ vm_max_count }}"
     state: present
 
+- apt_key:
+    url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    state: present
+
 # Install apt-transports package required for Installation of Elasticsearch
 - name: install apt-transports
   apt: name=apt-transport-https state=present update_cache=yes

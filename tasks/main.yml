@@ -3,24 +3,30 @@
 
 - name: Include OS Specific setup tasks
   include_tasks: es-{{ ansible_os_family }}.yml
+  when: "'es' in group_names"
 
 - include_tasks: config.yml
-  vars:
-   - node_name: master
-   - node_master: "true"
-   - node_data: "false"
+  when: "'es' in group_names"
+
+- name: change config for master
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    line: "node.master: true" 
   when: "'esm' in group_names"
 
-- include_tasks: config.yml
-  vars:
-   - node_name: data
-   - node_master: "false"
-   - node_data: "true"
+
+- name: change config for data node
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    line: "node.data: true"
   when: "'esd' in group_names"
 
-- include_tasks: config.yml
-  vars:
-   - node_name: client
-   - node_master: "false"
-   - node_data: "false"
+
+- name: change config for client
+  blockinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    block: |
+      node.master: false
+      node.data: false
   when: "'esc' in group_names"
+

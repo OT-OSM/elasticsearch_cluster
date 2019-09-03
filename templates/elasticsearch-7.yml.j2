@@ -20,9 +20,13 @@ cluster.name: {{ cluster_name }}
 #
 # Use a descriptive name for the node:
 #
-node.name: {{ esIP }}-{{ node_name }}
-node.master: {{ node_master }}
-node.data: {{ node_data }}
+node.name: {{ esIP }}-node
+#node.master:
+#node.data:
+
+cluster.initial_master_nodes:
+- {{ esIP }}
+
 #
 # Add custom attributes to the node:
 #
