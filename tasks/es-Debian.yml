@@ -17,20 +17,21 @@
 
 # Install apt-transports package required for Installation of Elasticsearch
 - name: install apt-transports
-  apt: name=apt-transport-https state=present update_cache=yes
+  apt:
+    name: apt-transport-https
+    state: present
+    update_cache: yes
 
 # Download elasticsearch
 - name: Add elasticsearch repository...
   apt_repository:
-    repo: 'deb https://artifacts.elastic.co/packages/{{ elasticsearch_version }}.x/apt stable main'
+    repo: "deb https://artifacts.elastic.co/packages/{{ elasticsearch_version }}.x/apt stable main"
     state: present
 
 - name: Update cache...
   apt:
     update_cache: yes
     cache_valid_time: 86400
-  tags:
-    - test
 
 - name: Installing elasticsearch
   apt:

@@ -6,7 +6,7 @@
     dest: "{{ item.path }}"
   with_items:
     - {name: "limit.conf.j2", path: "/etc/security/limits.d/{{ es }}.conf"}
-    - {name: "{{ es_s }}.j2", path: "/usr/lib/systemd/system/{{ es_s }}"}
+    - {name: "{{ es_service }}.j2", path: "/usr/lib/systemd/system/{{ es_service }}"}
   notify:
     - reload systemd
     - restart elasticsearch

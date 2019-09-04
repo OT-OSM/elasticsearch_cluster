@@ -20,7 +20,7 @@ cluster.name: {{ cluster_name }}
 #
 # Use a descriptive name for the node:
 #
-node.name: {{ esIP }}-{{ node_name }}
+node.name: {{ es_IP }}-{{ node_name }}
 node.master: {{ node_master }}
 node.data: {{ node_data }}
 #
@@ -54,7 +54,7 @@ path.logs: {{ log_path }}
 #
 # Set the bind address to a specific IP (IPv4 or IPv6):
 #
-network.host: {{ esIP }}
+network.host: {{ es_IP }}
 #
 # Set a custom port for HTTP:
 #

@@ -31,35 +31,41 @@ cluster_name: es-cluster
 Define your type of nodes in host/inventory file based on below format. Can increase the node counts as much you want. 
 
 ```
-[es:children]
-esm
-esd
-esc
+[es]
+127.0.0.1 ansible_ssh_user=root
+127.0.0.2 ansible_ssh_user=root
+127.0.0.3 ansible_ssh_user=root
 [esm]
-64.627.16.131 ansible_ssh_user=ubuntu
-103.23.36.76 ansible_ssh_user=ubuntu
-61.211.23.11 ansible_ssh_user=ubuntu
+127.0.0.1 ansible_ssh_user=root
+127.0.0.2 ansible_ssh_user=root
 [esd]
-54.147.131.37 ansible_ssh_user=ubuntu
-45.62.49.102 ansible_ssh_user=ubuntu
-```
-Client node configuration is Optional, if required add below info in host/inventory file:
-```
+127.0.0.1 ansible_ssh_user=root
+127.0.0.2 ansible_ssh_user=root
 [esc]
-100.26.208.53 ansible_ssh_user=ubuntu
+127.0.0.3 ansible_ssh_user=root
+
 ```
 Where,  
-es: is cluster group name  
+es: all es servers
 esm: is master node information  
 esd: is data node information  
-esc: is client node information  
+esc: is client node information
+
+
+
+add all es servers ip under group es. The add the specific server ip whoom u want to be master node in the group [esm], special mention this server need to be present in [es] group.do the same for data nodd and client node.
+
+Remember that one same server can be  used for data and master node but for client we need a specific server.  
 
 # Example Playbook
 
 ```
-- hosts: es
+---
+- hosts: all
+  become: true
   roles:
-     - { role: elasticsearch_cluster }
+    - osm_elasticsearch_cluster
+
 ```
 
 # License
