@@ -1,6 +1,16 @@
 ---
 # tasks file for logstash
 
+
+- name: Fetch Java version
+  shell: java -version 2>&1 | grep version | awk '{print $3}' | sed 's/"//g'
+  register: java_version
+
+- assert:
+    that: 
+      - java_version is version('0.0.0', '>=') 
+    fail_msg: "java is not present"
+
 - name: Include OS Specific setup tasks
   include_tasks: es-{{ ansible_os_family }}.yml
   when: "'es' in group_names"
