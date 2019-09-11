@@ -32,17 +32,17 @@ Define your type of nodes in host/inventory file based on below format. Can incr
 
 ```
 [es]
-127.0.0.1 ansible_ssh_user=root
-127.0.0.2 ansible_ssh_user=root
-127.0.0.3 ansible_ssh_user=root
+es1 ansible_host=127.0.0.1 ansible_ssh_user=root
+es2 ansible_host=127.0.0.2 ansible_ssh_user=root
+es3 ansible_host=127.0.0.3 ansible_ssh_user=root
 [esm]
-127.0.0.1 ansible_ssh_user=root
-127.0.0.2 ansible_ssh_user=root
+esm1 ansible_host=127.0.0.1 ansible_ssh_user=root
+esm2 ansible_host=127.0.0.2 ansible_ssh_user=root
 [esd]
-127.0.0.1 ansible_ssh_user=root
-127.0.0.2 ansible_ssh_user=root
+esd1 ansible_host=127.0.0.1 ansible_ssh_user=root
+esd2 ansible_host=127.0.0.2 ansible_ssh_user=root
 [esc]
-127.0.0.3 ansible_ssh_user=root
+esc1 ansible_host=127.0.0.3 ansible_ssh_user=root
 
 ```
 Where,  

@@ -25,7 +25,9 @@ node.name: {{ es_IP }}-node
 #node.data:
 
 cluster.initial_master_nodes:
-- {{ es_IP }}
+{% for host in groups['esm'] %}
+- {{hostvars[host]['ansible_host']}}
+{% endfor %}
 
 #
 # Add custom attributes to the node:

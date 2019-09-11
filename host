@@ -1,0 +1,11 @@
+[es]
+es1 ansible_host=192.168.0.61 ansible_ssh_user=vagrant
+es2 ansible_host=192.168.0.75 ansible_ssh_user=vagrant
+[esm]
+esm1 ansible_host=192.168.0.61 ansible_ssh_user=vagrant
+esm2 ansible_host=192.168.0.75 ansible_ssh_user=vagrant
+[esd]
+esd1 ansible_host=192.168.0.61 ansible_ssh_user=vagrant
+esd2 ansible_host=192.168.0.75 ansible_ssh_user=vagrant
+[esc]
+
