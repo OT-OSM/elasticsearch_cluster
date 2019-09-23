@@ -14,7 +14,9 @@
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
   with_items:
-    - {name: "{{ cert_path }}", path: "/etc/elasticsearch/certs/elasticsearch.p12"}
+    - {name: "{{ cert_path }}/{{ key_name }}", path: "/etc/elasticsearch/certs/{{ es_IP }}-node.key"}
+    - {name: "{{ cert_path }}/{{ certificate_name }}", path: "/etc/elasticsearch/certs/{{ es_IP }}-node.crt"}
+    - {name: "{{ cert_path }}/{{ certificate_authorities_name }}", path: "/etc/elasticsearch/certs/ca.crt"}
   notify:
     - restart elasticsearch
 

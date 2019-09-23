@@ -1,6 +1,7 @@
 ---
 elasticsearch_version: "7"
-cluster_name: es-cluster
+cluster_name: node
+
 
 # Static value ####
 es_url: "elasticsearch/elasticsearch-{{ elasticsearch_version }}"
