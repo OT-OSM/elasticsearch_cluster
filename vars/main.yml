@@ -1,6 +1,8 @@
 ---
 elasticsearch_version: "7"
 cluster_name: "es-cluster"
+# eneter the path of certificate /tmp/creds/sample.p12
+cert_path: "/home/molu/creds/sample.p12"
 
 # es_jvm_dump: /var/lib/elasticsearch/heap
 # data_path: /var/lib/elasticsearch
