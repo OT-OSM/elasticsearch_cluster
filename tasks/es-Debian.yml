@@ -25,7 +25,7 @@
 # Download elasticsearch
 - name: Add elasticsearch repository...
   apt_repository:
-    repo: "deb https://artifacts.elastic.co/packages/{{ elasticsearch_version }}.x/apt stable main"
+    repo: "deb https://artifacts.elastic.co/packages/{{ elasticsearch_series }}.x/apt stable main"
     state: present
 
 - name: Update cache...
@@ -35,7 +35,7 @@
 
 - name: Installing elasticsearch
   apt:
-    name: elasticsearch
+    name: elasticsearch={{ elasticsearch_version }}
     state: present
     update_cache: yes
 

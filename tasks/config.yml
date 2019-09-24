@@ -17,7 +17,7 @@
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
   with_items:
-    - {name: "{{ es }}-{{ elasticsearch_version }}.yml.j2", path: "/etc/elasticsearch/{{ es }}.yml"}
-    - {name: "jvm-{{ elasticsearch_version }}.options.j2", path: "/etc/elasticsearch/jvm.options"}
+    - {name: "{{ es }}-{{ elasticsearch_series }}.yml.j2", path: "/etc/elasticsearch/{{ es }}.yml"}
+    - {name: "jvm-{{ elasticsearch_series }}.options.j2", path: "/etc/elasticsearch/jvm.options"}
   notify:
     - restart elasticsearch
