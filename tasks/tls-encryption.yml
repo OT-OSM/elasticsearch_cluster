@@ -1,0 +1,22 @@
+---
+
+- name: Create certificate directory
+  file:
+    path: "/etc/elasticsearch/certs"
+    state: directory
+    owner: "elasticsearch"
+    group: "elasticsearch"
+    mode: 0775
+
+# add certificates in nodes
+- name: add certificates in nodes
+  template:
+    src: "{{ item.name }}"
+    dest: "{{ item.path }}"
+  with_items:
+    - {name: "{{ cert_path }}/{{ key_name }}", path: "/etc/elasticsearch/certs/{{ es_IP }}-node.key"}
+    - {name: "{{ cert_path }}/{{ certificate_name }}", path: "/etc/elasticsearch/certs/{{ es_IP }}-node.crt"}
+    - {name: "{{ cert_path }}/{{ certificate_authorities_name }}", path: "/etc/elasticsearch/certs/ca.crt"}
+  notify:
+    - restart elasticsearch
+

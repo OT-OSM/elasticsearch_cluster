@@ -1,6 +1,12 @@
 ---
-elasticsearch_version: "6.5.1"
+elasticsearch_version: "7.3.1"
+elasticsearch_series: "7"
 cluster_name: "es-cluster"
+# eneter the path of certificate /tmp/creds/sample.p12
+cert_path: "/home/molu/creds/"
+key_name: "node1.key"
+certificate_name: "node1.crt"
+certificate_authorities_name: "ca.crt"
 
 # es_jvm_dump: /var/lib/elasticsearch/heap
 # data_path: /var/lib/elasticsearch

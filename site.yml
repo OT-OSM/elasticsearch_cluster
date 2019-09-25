@@ -1,5 +1,0 @@
----
-- hosts: es
-  become: true
-  roles:
-    - elasticsearch_cluster
