@@ -20,16 +20,8 @@
 # Download elasticsearch
 - name: Download rpm.
   get_url:
-    url: https://artifacts.elastic.co/downloads/{{ es_url }}.rpm
+    url: https://artifacts.elastic.co/downloads/{{ esurl }}.rpm
     dest: /tmp/elasticsearch-{{ elasticsearch_version }}.rpm
-    when: elasticsearch_version is version('6.9.9', '<=')
-
-- name: Download rpm.
-  get_url:
-    url: https://artifacts.elastic.co/downloads/{{ es_url }}-x86_64.rpm
-    dest: /tmp/elasticsearch-{{ elasticsearch_version }}-{{ ansible_machine }}.rpm
-  when: elasticserach_version is version('7.0.0', '>=')
-
 
 # enable openfile limit without restart
 - name: enable open file witout restart
@@ -37,7 +29,7 @@
 
 # Install rpm file elasticsearch
 - name: install elasticsearch
-  yum: name=/tmp/elasticsearch-{{ elasticsearch_version }}-x86_64.rpm state=present
+  yum: name=/tmp/elasticsearch-{{ elasticsearch_version }}.rpm state=present
   notify:
     - restart elasticsearch
 
