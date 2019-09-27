@@ -22,13 +22,13 @@
   get_url:
     url: https://artifacts.elastic.co/downloads/{{ es_url }}.rpm
     dest: /tmp/elasticsearch-{{ elasticsearch_version }}.rpm
-    when: elasticsearch_version is version('6.9.9', '<=')
+  when: elasticsearch_version is version('6.9.9', '<=')
 
 - name: Download rpm.
   get_url:
     url: https://artifacts.elastic.co/downloads/{{ es_url }}-{{ ansible_machine }}.rpm
     dest: /tmp/elasticsearch-{{ elasticsearch_version }}.rpm
-  when: elasticserach_version is version('7.0.0', '>=')
+  when: elasticsearch_version is version('7.0.0', '>=')
 
 
 # enable openfile limit without restart
