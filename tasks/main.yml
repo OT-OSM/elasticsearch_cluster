@@ -6,6 +6,9 @@
   shell: java -version
   become: false 
 
+- name: Configuring common configuration
+  include_tasks: common.yml
+
 - name: Include OS Specific setup tasks
   include_tasks: es-{{ ansible_os_family }}.yml
   when: "'es' in group_names"

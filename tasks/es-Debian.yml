@@ -1,16 +1,4 @@
 ---
-# Set vm.swappiness to 1 in /etc/sysctl.conf
-- sysctl:
-    name: vm.swappiness
-    value: "{{ swapness }}"
-    state: present
-
-# Set virtual max area /etc/sysctl.conf
-- sysctl:
-    name: vm.max_map_count
-    value: "{{ vm_max_count }}"
-    state: present
-
 - apt_key:
     url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
     state: present
