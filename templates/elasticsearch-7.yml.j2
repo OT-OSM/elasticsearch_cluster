@@ -26,7 +26,7 @@ node.name: {{ es_IP }}
 
 cluster.initial_master_nodes:
 {% for host in groups['esm'] %}
-- {{hostvars[host]['ansible_host']}}
+- {{hostvars[host]['ansible_default_ipv4']['address']}}
 {% endfor %}
 
 #
@@ -98,9 +98,9 @@ discovery.zen.minimum_master_nodes: 1
 # Require explicit names when deleting indices:
 #
 action.destructive_requires_name: true
-xpack.monitoring.collection.enabled: true
-xpack.security.transport.ssl.enabled: true
-xpack.security.transport.ssl.verification_mode: certificate 
-xpack.security.transport.ssl.key: /etc/elasticsearch/certs/{{ es_IP }}-node.key
-xpack.security.transport.ssl.certificate: /etc/elasticsearch/certs/{{ es_IP }}-node.crt
-xpack.security.transport.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/ca.crt" ] 
+#xpack.monitoring.collection.enabled: true
+#xpack.security.transport.ssl.enabled: true
+#xpack.security.transport.ssl.verification_mode: certificate 
+#xpack.security.transport.ssl.key: /etc/elasticsearch/certs/{{ es_IP }}-node.key
+#xpack.security.transport.ssl.certificate: /etc/elasticsearch/certs/{{ es_IP }}-node.crt
+#xpack.security.transport.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/ca.crt" ] 
