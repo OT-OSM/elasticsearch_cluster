@@ -38,6 +38,7 @@
       node.data: false
   when: "'esc' in group_names"
 
-  #- name: add tls encryption
-  #include_tasks: tls-encryption.yml
+- name: add tls encryption
+  include_tasks: tls-encryption.yml
+  when: tls_enable == 'yes'
 

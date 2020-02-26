@@ -1,7 +1,10 @@
 ---
 
 # eneter the path of certificate /tmp/creds/sample.p12
-cert_path: "/home/molu/creds/"
+elasticsearch_version: "7.3.1"
+elasticsearch_series: "7"
+cluster_name: es-cluster
+tls_enable: "yes"
 key_name: "node1.key"
 certificate_name: "node1.crt"
 certificate_authorities_name: "ca.crt"

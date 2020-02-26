@@ -10,13 +10,13 @@
 
 # add certificates in nodes
 - name: add certificates in nodes
-  template:
+  copy:
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
   with_items:
-    - {name: "{{ cert_path }}/{{ key_name }}", path: "/etc/elasticsearch/certs/{{ es_IP }}-node.key"}
-    - {name: "{{ cert_path }}/{{ certificate_name }}", path: "/etc/elasticsearch/certs/{{ es_IP }}-node.crt"}
-    - {name: "{{ cert_path }}/{{ certificate_authorities_name }}", path: "/etc/elasticsearch/certs/ca.crt"}
+    - {name: "{{ role_path }}/files/{{ key_name }}", path: "/etc/elasticsearch/certs/{{ es_IP }}-node.key"}
+    - {name: "{{ role_path }}/files/{{ certificate_name }}", path: "/etc/elasticsearch/certs/{{ es_IP }}-node.crt"}
+    - {name: "{{ role_path }}/files/{{ certificate_authorities_name }}", path: "/etc/elasticsearch/certs/ca.crt"}
   notify:
     - restart elasticsearch
 

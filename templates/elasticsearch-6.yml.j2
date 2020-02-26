@@ -93,3 +93,17 @@ discovery.zen.minimum_master_nodes: 1
 #
 action.destructive_requires_name: true
 xpack.monitoring.collection.enabled: true
+{% if tls_enable == "yes" %}
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.key: /etc/elasticsearch/certs/{{ es_IP }}-node.key
+xpack.security.transport.ssl.certificate: /etc/elasticsearch/certs/{{ es_IP }}-node.crt
+xpack.security.transport.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/ca.crt" ]
+{% else %}
+#xpack.security.transport.ssl.enabled: true
+#xpack.security.transport.ssl.verification_mode: certificate 
+#xpack.security.transport.ssl.key: /etc/elasticsearch/certs/{{ es_IP }}-node.key
+#xpack.security.transport.ssl.certificate: /etc/elasticsearch/certs/{{ es_IP }}-node.crt
+#xpack.security.transport.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/ca.crt" ]
+{% endif %}
+

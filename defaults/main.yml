@@ -1,9 +1,4 @@
 ---
-elasticsearch_version: "7.4.0"
-elasticsearch_series: "7"
-cluster_name: es-cluster
-
-
 # Static value ####
 es_url: "elasticsearch/elasticsearch-{{ elasticsearch_version }}"
 es_service: "elasticsearch.service"
