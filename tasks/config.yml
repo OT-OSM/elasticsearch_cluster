@@ -21,3 +21,4 @@
     - {name: "jvm-{{ elasticsearch_series }}.options.j2", path: "/etc/elasticsearch/jvm.options"}
   notify:
     - restart elasticsearch
+

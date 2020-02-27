@@ -4,13 +4,15 @@
 elasticsearch_version: "7.3.1"
 elasticsearch_series: "7"
 cluster_name: es-cluster
+http_port: 9200
+tcp_port: 9300
 tls_enable: "yes"
 key_name: "node1.key"
 certificate_name: "node1.crt"
 certificate_authorities_name: "ca.crt"
+nofile_limit: "65536"
+nproc_limit: "5000"
+swapness: "1"
+vm_max_count: "2621444"
+m_lock: "false"
 
-# es_jvm_dump: /var/lib/elasticsearch/heap
-# data_path: /var/lib/elasticsearch
-# log_path: /var/log/elasticsearch
-
-# esIP: "0.0.0.0"
