@@ -1,5 +1,4 @@
 ---
-
 - name: Create certificate directory
   file:
     path: "/etc/elasticsearch/certs"
@@ -19,4 +18,3 @@
     - {name: "{{ role_path }}/files/{{ certificate_authorities_name }}", path: "/etc/elasticsearch/certs/ca.crt"}
   notify:
     - restart elasticsearch
-
