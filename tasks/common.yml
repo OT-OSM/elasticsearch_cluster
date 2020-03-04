@@ -5,7 +5,6 @@
     name: vm.swappiness
     value: "{{ swapness }}"
     state: present
-
 # Set virtual max area /etc/sysctl.conf
 - sysctl:
     name: vm.max_map_count

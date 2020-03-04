@@ -10,7 +10,6 @@
   notify:
     - reload systemd
     - restart elasticsearch
-
 # update elasticsearch config files
 - name: Create elasticsearch configuration files.
   template:
@@ -21,4 +20,3 @@
     - {name: "jvm-{{ elasticsearch_series }}.options.j2", path: "/etc/elasticsearch/jvm.options"}
   notify:
     - restart elasticsearch
-

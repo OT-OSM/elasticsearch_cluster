@@ -27,11 +27,9 @@
     state: present
     update_cache: yes
 
-
 # enable openfile limit without restart
 - name: enable open file witout restart
   shell: "ulimit -n 4096"
-
 
 # Create directory for es_data and heap_dump storage
 - name: Create data_path directory
@@ -53,4 +51,3 @@
     name: elasticsearch
     state: started
     enabled: yes
-

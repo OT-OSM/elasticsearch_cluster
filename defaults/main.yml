@@ -4,14 +4,11 @@ es_url: "elasticsearch/elasticsearch-{{ elasticsearch_version }}"
 es_service: "elasticsearch.service"
 es: "elasticsearch"
 # Static value end #####
-
 es_jvm_dump: /var/lib/elasticsearch/heap
 data_path: /var/lib/elasticsearch
 log_path: /var/log/elasticsearch
-
 es_IP: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
 zen_host: "[\"{{ groups['esm'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join('\",\"') }}\"]"
-
 min_heap: "{{ ansible_memtotal_mb // 2 }}m"
 max_heap: "{{ ansible_memtotal_mb // 2 }}m"
 
