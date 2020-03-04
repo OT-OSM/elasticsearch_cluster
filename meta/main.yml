@@ -1,8 +1,7 @@
 ---
 galaxy_info:
-    author: sumitopstree
+    author: MoulenduGhosh
     description: Install Elasticsearch in Cluster mode
-    license: "license (BSD, MIT)"
 
     min_ansible_version: 2.7
 

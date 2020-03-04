@@ -16,7 +16,7 @@ Amazon Linux
 
 **Dependencies**
 
-pyhton  
+python  
 Java 1.8 or greater
 
 **Role Variables**
@@ -120,3 +120,12 @@ Then run the role with the bellow command and u have provide the password that u
 ```
 ansible-playbook -i host --ask-vault-pass site.yml
 ```
+
+you can use this password to encrypt and decrypt the certs
+```
+OcCeybCiWist33367
+```
+
+** Author **
+
+Moulendu Ghosh
