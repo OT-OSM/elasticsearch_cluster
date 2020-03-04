@@ -11,4 +11,3 @@ es_IP: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
 zen_host: "[\"{{ groups['esm'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join('\",\"') }}\"]"
 min_heap: "{{ ansible_memtotal_mb // 2 }}m"
 max_heap: "{{ ansible_memtotal_mb // 2 }}m"
-
