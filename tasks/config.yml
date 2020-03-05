@@ -10,7 +10,6 @@
   notify:
     - reload systemd
     - restart elasticsearch
-
 # update elasticsearch config files
 - name: Create elasticsearch configuration files.
   template:

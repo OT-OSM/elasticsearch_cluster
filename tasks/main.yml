@@ -1,10 +1,11 @@
 ---
 # tasks file for elasticsearch
-
-
 - name: Fetch Java version
   shell: java -version
-  become: false 
+  become: false
+
+- name: Configuring common configuration
+  include_tasks: common.yml
 
 - name: Include OS Specific setup tasks
   include_tasks: es-{{ ansible_os_family }}.yml
@@ -16,7 +17,7 @@
 - name: change config for master
   lineinfile:
     path: /etc/elasticsearch/elasticsearch.yml
-    line: "node.master: true" 
+    line: "node.master: true"
   when: "'esm' in group_names"
 
 
@@ -37,4 +38,4 @@
 
 - name: add tls encryption
   include_tasks: tls-encryption.yml
-
+  when: tls_enable == 'yes'
