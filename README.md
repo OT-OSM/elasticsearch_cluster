@@ -1,29 +1,29 @@
-**Osm_ElasticSearch_Cluster**
+## Osm_ElasticSearch_Cluster
 
 This repo controls the Ansible Role for ElasticSearch cluster installation.
 
-**Key Features**
+## Key Features
 
 Standalone setup
 Cluster setup
 TLS encryption
 
-**Supported os**
+## Supported os
 
 Redhat 7
 Ubuntu 14/16/18
 Amazon Linux
 
-**Dependencies**
+## Dependencies
 
-python  
+python   
 Java 1.8 or greater
 
-**Role Variables**
+## Role Variables
 
 We have categorized variables into two part i.e. Manadatory and Optional
 
-**Mandatory Variables**
+## Mandatory Variables
 
 | **Variable** | **Default Value** | **Possible Values** | **Description** |
 |--------------| ----------------- | ------------------- | --------------- |
@@ -44,7 +44,7 @@ We have categorized variables into two part i.e. Manadatory and Optional
 
 
 
-**Optional Variables**
+## Optional Variables
 
 | **Variable** | **Default Value** | **Possible Values** | **Description** |
 |--------------| ----------------- | ------------------- | --------------- |
@@ -57,7 +57,7 @@ We have categorized variables into two part i.e. Manadatory and Optional
 
 
 
-**Node defination:**
+## Node defination:
 
 Define your type of nodes in host/inventory file based on the below format. Can increase the node counts as much you want.
 
@@ -88,7 +88,7 @@ add all es servers IP under group es. The add the specific server ip whom u want
 
 Remember that one same server can be used for data and master node but for clients we need a specific server.  
 
-**Example Playbook**
+## Example Playbook
 ```
 ---
 - hosts: all
@@ -97,7 +97,7 @@ Remember that one same server can be used for data and master node but for clien
     - osm_elasticsearch_cluster
 ```
 
-**Usage**
+## Usage
 
 There are multiple ways of executing the playbook according to your environment
 
@@ -111,7 +111,7 @@ To run with TLS encryption and vault
 ansible-playbook -i host --ask-vault-pass site.yml
 ```
 
-**TLS encryption enable **
+## TLS encryption enable
 To enable tls encryption first got to the vars/main.yml file and change tls_enable variable value to “yes” then keep all certs in files directory and enter their name in vars/main.yml file. After that encrypt the certs with the vault. Run the bellow command and encrypt the certs and set a password.
 ```
 ansible-vault encrypt ca.crt
@@ -126,6 +126,6 @@ you can use this password to encrypt and decrypt the certs
 OcCeybCiWist33367
 ```
 
-**Author**
+## Author
 
 Moulendu Ghosh
