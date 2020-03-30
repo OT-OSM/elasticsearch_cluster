@@ -1,5 +1,5 @@
 ---
-# tasks file for elasticsearch
+# Tasks file for elasticsearch
 - name: Fetch Java version
   command: java -version
   become: false
