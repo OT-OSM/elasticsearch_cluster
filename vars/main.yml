@@ -1,12 +1,12 @@
 ---
 
 # eneter the path of certificate /tmp/creds/sample.p12
-elasticsearch_version: "7.3.1"
+elasticsearch_version: "7.6.2"
 elasticsearch_series: "7"
 cluster_name: es-cluster
 http_port: 9200
 tcp_port: 9300
-tls_enable: "yes"
+tls_enable: "no"
 key_name: "node1.key"
 certificate_name: "node1.crt"
 certificate_authorities_name: "ca.crt"
@@ -15,3 +15,4 @@ nproc_limit: "5000"
 swapness: "1"
 vm_max_count: "2621444"
 m_lock: "false"
+standalone: "yes"
