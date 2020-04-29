@@ -41,7 +41,7 @@ We have categorized variables into two part i.e. Manadatory and Optional
 |swapness|1|0 to 100|Swappiness is the kernel parameter that defines how much (and how often) your Linux kernel will copy RAM contents to swap. This parameter's default value is “60” and it can take anything from “0” to “100”. The higher the value of the swappiness parameter, the more aggressively your kernel will swap.|
 |vm_max_count|2621444|2621444|Elasticsearch uses a mmapfs directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions.|
 |m_lock|false|False or true|When the JVM does a major garbage collection it touches every page of the heap. If any of those pages are swapped out to disk they will have to be swapped back in to memory. That causes lots of disk thrashing that Elasticsearch would much rather use to service requests. There are several ways to configure a system to disallow swapping. One way is by requesting the JVM to lock the heap in memory through mlockall (Unix) or virtual lock (Windows). This is done via the Elasticsearch setting bootstrap.memory_lock|
-
+|standalone|no|Yes or no|This variable is to mention standalone setup |
 
 
 ## Optional Variables

@@ -24,14 +24,3 @@
     - restart elasticsearch
   when: standalone == 'no'
 
-- name: Create elasticsearch configuration files for standalone.
-  template:
-    src: "{{ item.name }}"
-    dest: "{{ item.path }}"
-  with_items:
-    - {name: "elasticsearch-standalone.yml.j2", path: "/etc/elasticsearch/{{ es }}.yml"}
-    - {name: "jvm-{{ elasticsearch_series }}.options.j2", path: "/etc/elasticsearch/jvm.options"}
-  notify:
-    - restart elasticsearch
-  when: standalone == 'no'
-

@@ -6,7 +6,7 @@ elasticsearch_series: "7"
 cluster_name: es-cluster
 http_port: 9200
 tcp_port: 9300
-tls_enable: "no"
+tls_enable: "yes"
 key_name: "node1.key"
 certificate_name: "node1.crt"
 certificate_authorities_name: "ca.crt"
