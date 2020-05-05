@@ -12,7 +12,9 @@
 
 - name: Download rpm.
   get_url:
-    url: https://artifacts.elastic.co/downloads/{{ es_url }}-{{ ansible_machine }}.rpm
+    url: >-
+      https://artifacts.elastic.co/downloads/
+      {{ es_url }}-{{ ansible_machine }}.rpm
     dest: /tmp/elasticsearch-{{ elasticsearch_version }}.rpm
   when: elasticsearch_version is version('7.0.0', '>=')
 

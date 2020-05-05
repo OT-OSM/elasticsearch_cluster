@@ -13,8 +13,8 @@
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
   with_items:
-    - {name: "{{ role_path }}/files/{{ key_name }}", path: "/etc/elasticsearch/certs/{{ es_IP }}-node.key"}
-    - {name: "{{ role_path }}/files/{{ certificate_name }}", path: "/etc/elasticsearch/certs/{{ es_IP }}-node.crt"}
-    - {name: "{{ role_path }}/files/{{ certificate_authorities_name }}", path: "/etc/elasticsearch/certs/ca.crt"}
+    - {name: "{{ key }}", path: "{{ conf }}certs/{{ es_IP }}-node.key"}
+    - {name: "{{ certificate }}", path: "{{ conf }}certs/{{ es_IP }}-node.crt"}
+    - {name: "{{ certificate_auth }}", path: "{{ conf }}certs/ca.crt"}
   notify:
     - restart elasticsearch

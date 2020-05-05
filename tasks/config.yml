@@ -6,17 +6,20 @@
     dest: "{{ item.path }}"
   with_items:
     - {name: "limit.conf.j2", path: "/etc/security/limits.d/{{ es }}.conf"}
-    - {name: "{{ es_service }}.j2", path: "/usr/lib/systemd/system/{{ es_service }}"}
+    - {name: "{{ es_service }}.j2", path: "{{ systemd_path }}/{{ es_service }}"}
   notify:
     - reload systemd
     - restart elasticsearch
+  when: standalone == 'no'
+
 # update elasticsearch config files
 - name: Create elasticsearch configuration files.
   template:
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
   with_items:
-    - {name: "{{ es }}-{{ elasticsearch_series }}.yml.j2", path: "/etc/elasticsearch/{{ es }}.yml"}
-    - {name: "jvm-{{ elasticsearch_series }}.options.j2", path: "/etc/elasticsearch/jvm.options"}
+    - {name: "{{ es }}-{{ es_series }}.yml.j2", path: "{{ conf }}{{ es }}.yml"}
+    - {name: "jvm-{{ es_series }}.options.j2", path: "{{ conf }}jvm.options"}
   notify:
     - restart elasticsearch
+  when: standalone == 'no'

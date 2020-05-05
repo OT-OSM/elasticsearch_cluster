@@ -1,8 +1,9 @@
 ---
-# tasks file for elasticsearch
+# Tasks file for elasticsearch
 - name: Fetch Java version
-  shell: java -version
+  command: java -version
   become: false
+  changed_when: false
 
 - name: Configuring common configuration
   include_tasks: common.yml

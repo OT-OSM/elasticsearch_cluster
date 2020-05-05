@@ -9,6 +9,14 @@ es_jvm_dump: /var/lib/elasticsearch/heap
 data_path: /var/lib/elasticsearch
 log_path: /var/log/elasticsearch
 es_IP: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-zen_host: "[\"{{ groups['esm'] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join('\",\"') }}\"]"
+zen_host: >-
+  "[\"{{ groups['esm']
+  | map('extract', hostvars, ['ansible_default_ipv4', 'address'])
+  | join('\",\"') }}\"]"
 min_heap: "{{ ansible_memtotal_mb // 2 }}m"
 max_heap: "{{ ansible_memtotal_mb // 2 }}m"
+systemd_path: /usr/lib/systemd/system
+conf: /etc/elasticsearch/
+key: "{{ role_path }}/files/{{ key_name }}"
+certificate: "{{ role_path }}/files/{{ certificate_name }}"
+certificate_auth: "{{ role_path }}/files/{{ certificate_authorities_name }}"
