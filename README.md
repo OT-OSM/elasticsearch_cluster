@@ -54,7 +54,8 @@ We have categorized variables into two part i.e. Manadatory and Optional
 |es_jvm_dump|/var/lib/elasticsearch/heap|Any path|Path to jvm dump|
 |log_path|/var/log/elasticsearch|Any path|Es log path|
 |data_path|/var/lib/elasticsearch|Any path|Path to es data|
-
+|systemd_path|/usr/lib/systemd/system|/usr/lib/systemd/system|service file path|
+|conf|/etc/elasticsearch/|/etc/elasticsearch/|es config file path|
 
 
 ## Node defination:

@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - ../osm_elasticsearch_cluster
+          #  tasks:
+          #    - include_tasks: tasks/config.yml
+

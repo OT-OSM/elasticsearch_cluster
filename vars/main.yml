@@ -2,7 +2,7 @@
 
 # eneter the path of certificate /tmp/creds/sample.p12
 elasticsearch_version: "7.6.2"
-elasticsearch_series: "7"
+es_series: "7"
 cluster_name: es-cluster
 http_port: 9200
 tcp_port: 9300
