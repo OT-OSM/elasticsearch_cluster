@@ -15,7 +15,7 @@
   with_items:
     - {name: "{{ key }}", path: "{{ conf }}certs/{{ es_IP }}-node.key"}
     - {name: "{{ certificate }}", path: "{{ conf }}certs/{{ es_IP }}-node.crt"}
-    - {name: "{{ certificate_authorities }}", path: "{{ conf }}certs/ca.crt"}
+    - {name: "{{ certificate_auth }}", path: "{{ conf }}certs/ca.crt"}
   notify:
     - restart elasticsearch
 

@@ -9,7 +9,7 @@ es_jvm_dump: /var/lib/elasticsearch/heap
 data_path: /var/lib/elasticsearch
 log_path: /var/log/elasticsearch
 es_IP: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-zen_host: >- 
+zen_host: >-
   "[\"{{ groups['esm']
   | map('extract', hostvars, ['ansible_default_ipv4', 'address'])
   | join('\",\"') }}\"]"
@@ -19,4 +19,4 @@ systemd_path: /usr/lib/systemd/system
 conf: /etc/elasticsearch/
 key: "{{ role_path }}/files/{{ key_name }}"
 certificate: "{{ role_path }}/files/{{ certificate_name }}"
-certificate_authorities: "{{ role_path }}/files/{{ certificate_authorities_name }}"
+certificate_auth: "{{ role_path }}/files/{{ certificate_authorities_name }}"
