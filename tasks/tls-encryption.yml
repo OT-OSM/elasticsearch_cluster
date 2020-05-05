@@ -18,4 +18,3 @@
     - {name: "{{ certificate_auth }}", path: "{{ conf }}certs/ca.crt"}
   notify:
     - restart elasticsearch
-
