@@ -27,7 +27,7 @@ We have categorized variables into two part i.e. Manadatory and Optional
 
 | **Variable** | **Default Value** | **Possible Values** | **Description** |
 |--------------| ----------------- | ------------------- | --------------- |
-| elasticsearch_version|7.3.1|Any es version as required|Exact es version which we need to install|
+| elasticsearch_version|7.16.2|Any es version as required|Exact es version which we need to install|
 |elasticsearch_series|7|6/7/8 etc|Es major version|
 |cluster_name|es-cluster|Cluster name |Cluster name |
 |http_port|9200|Any Linux port|Assign a port to connect with es|
