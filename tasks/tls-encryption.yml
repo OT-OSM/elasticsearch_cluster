@@ -8,10 +8,11 @@
     mode: 0775
 
 # add certificates in nodes
-- name: add certificates in nodes
+- name: Add certificates in nodes
   copy:
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
+    mode: '0660'
   with_items:
     - {name: "{{ key }}", path: "{{ conf }}certs/{{ es_IP }}-node.key"}
     - {name: "{{ certificate }}", path: "{{ conf }}certs/{{ es_IP }}-node.crt"}

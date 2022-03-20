@@ -32,6 +32,7 @@
 # enable openfile limit without restart
 - name: enable open file witout restart
   shell: "ulimit -n 4096"
+  changed_when: true
 
 # Create directory for es_data and heap_dump storage
 - name: Create data_path directory
