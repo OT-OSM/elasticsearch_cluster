@@ -22,6 +22,7 @@
 # enable openfile limit without restart
 - name: enable open file witout restart
   shell: "ulimit -n 4096"
+  changed_when: true
 
 # Install rpm file elasticsearch
 - name: install elasticsearch

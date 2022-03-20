@@ -4,6 +4,7 @@
   template:
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
+    mode: "0660"
   with_items:
     - {name: "limit.conf.j2", path: "/etc/security/limits.d/{{ es }}.conf"}
     - {name: "{{ es_service }}.j2", path: "{{ systemd_path }}/{{ es_service }}"}
@@ -17,6 +18,7 @@
   template:
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
+    mode: '0660'
   with_items:
     - {name: "{{ es }}-{{ es_series }}.yml.j2", path: "{{ conf }}{{ es }}.yml"}
     - {name: "jvm-{{ es_series }}.options.j2", path: "{{ conf }}jvm.options"}

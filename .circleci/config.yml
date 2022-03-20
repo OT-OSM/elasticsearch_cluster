@@ -20,4 +20,3 @@ workflows:
       - yaml_lint
       - ansible_lint
 ...
-
