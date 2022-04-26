@@ -10,9 +10,9 @@ data_path: /var/lib/elasticsearch
 log_path: /var/log/elasticsearch
 es_IP: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
 zen_host: >-
-  "[\"{{ groups['esm']
+  ["{{ groups['esm']
   | map('extract', hostvars, ['ansible_default_ipv4', 'address'])
-  | join('\",\"') }}\"]"
+  | join('", "') }}"]
 min_heap: "{{ ansible_memtotal_mb // 2 }}m"
 max_heap: "{{ ansible_memtotal_mb // 2 }}m"
 systemd_path: /usr/lib/systemd/system
