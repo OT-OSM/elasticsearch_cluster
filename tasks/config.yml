@@ -25,3 +25,11 @@
     - { name: 'jvm-9.options.j2', path: '{{ conf }}jvm.options' }
   notify:
     - restart elasticsearch
+
+- name: Ensure correct ownership and permissions for configuration directory
+  ansible.builtin.file:
+    path: "{{ conf }}"
+    owner: "root"
+    group: "elasticsearch"
+    mode: "0770"
+    recurse: yes
