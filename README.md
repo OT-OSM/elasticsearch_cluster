@@ -1,132 +1,104 @@
-## Osm_ElasticSearch_Cluster
+# Elasticsearch Cluster Ansible Role (9.x)
 
-This repo controls the Ansible Role for ElasticSearch cluster installation.
+This Ansible role automates the deployment of a secure, production-ready Elasticsearch 9.x cluster. It is designed to handle multi-node architectures with built-in support for TLS encryption, automated user management, and OS-level performance tuning.
 
 ## Key Features
 
-Standalone setup
-Cluster setup
-TLS encryption
+- **Modern Standards**: Fully compliant with **FQCN** (Fully Qualified Collection Names) for long-term maintainability.
+- **Secure by Default**: 
+  - Automated **Transport and HTTP TLS/SSL** configuration.
+  - Support for **externally provided certificates** (organization-issued) via the `push_certs` flag.
+  - **Automated User Bootstrapping**: Automatically creates a custom administrative user with superuser privileges.
+- **Robust Discovery**: Intelligent bootstrapping logic for `discovery.seed_hosts` and `cluster.initial_master_nodes` that handles both new clusters and single-node setups.
+- **Performance Optimized**: Automatically configures critical OS settings (`vm.max_map_count`, `swappiness`, PAM limits) and manages JVM heap allocation.
+- **Multi-OS Support**: Optimized for Ubuntu 20.04/22.04, Debian 11/12, and RHEL 8/9.
 
-## Supported os
+## Supported Operating Systems
 
-Redhat 7
-Ubuntu 14/16/18
-Amazon Linux
+- **Ubuntu**: 20.04 (Focal), 22.04 (Jammy)
+- **Debian**: 11 (Bullseye), 12 (Bookworm)
+- **RHEL/CentOS/Rocky**: 8, 9
 
-## Dependencies
+## Prerequisites
 
-python   
-Java 1.8 or greater
+- **Ansible Version**: 2.14 or higher recommended.
+- **Collections**:
+  - `ansible.posix`
+  - `community.general`
 
 ## Role Variables
 
-We have categorized variables into two part i.e. Manadatory and Optional
+Variables are defined in `defaults/main.yml`. You should override these in `group_vars/all.yml` or your playbook.
 
-## Mandatory Variables
+### Core Configuration
 
-| **Variable** | **Default Value** | **Possible Values** | **Description** |
-|--------------| ----------------- | ------------------- | --------------- |
-| elasticsearch_version|7.16.2|Any es version as required|Exact es version which we need to install|
-|elasticsearch_series|7|6/7/8 etc|Es major version|
-|cluster_name|es-cluster|Cluster name |Cluster name |
-|http_port|9200|Any Linux port|Assign a port to connect with es|
-|tcp_port|9300|Any Linux port|Port through es node will communicate between them|
-|tls_enable|no|Yes or no|This variable will enable or disable tls encryption |
-|key_name|node1.key|Key name|Key name if tls encryption is enabled |
-|certificate_name|node1.crt|Certificate name|Certificate name if tls encryption is enabled |
-|certificate_authorities_name|ca.crt|Certificate authorities name|Certificate authorities name if tls encryption is enabled|
-|nofile_limit|65536|65536|This limits the number of file descriptors any process owned by the specified domain can have open at any one time|
-|nproc_limit|5000|5000|Nproc is defined at OS level to limit the number of processes per user|
-|swapness|1|0 to 100|Swappiness is the kernel parameter that defines how much (and how often) your Linux kernel will copy RAM contents to swap. This parameter's default value is “60” and it can take anything from “0” to “100”. The higher the value of the swappiness parameter, the more aggressively your kernel will swap.|
-|vm_max_count|2621444|2621444|Elasticsearch uses a mmapfs directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions.|
-|m_lock|false|False or true|When the JVM does a major garbage collection it touches every page of the heap. If any of those pages are swapped out to disk they will have to be swapped back in to memory. That causes lots of disk thrashing that Elasticsearch would much rather use to service requests. There are several ways to configure a system to disallow swapping. One way is by requesting the JVM to lock the heap in memory through mlockall (Unix) or virtual lock (Windows). This is done via the Elasticsearch setting bootstrap.memory_lock|
-|standalone|no|Yes or no|This variable is to mention standalone setup |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `elasticsearch_version` | `"9.3.4"` | The exact version of Elasticsearch to install. |
+| `cluster_name` | `"es-cluster"` | Name of the Elasticsearch cluster. |
+| `es_user` | `"admin"` | Administrative username created on bootstrap. |
+| `es_password` | `"password123"` | Password for the administrative user. |
 
+### Security & TLS
 
-## Optional Variables
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `tls_enable` | `true` | Enable/Disable encryption for Transport and HTTP layers. |
+| `push_certs` | `true` | Set to `false` if certificates are already on the server (provided by your organization). |
+| `es_security_enabled` | `true` | Enable built-in security (Basic Auth). |
+| `key_name` | `"node1.key"` | Filename of the node private key. |
+| `certificate_name` | `"node1.crt"` | Filename of the node certificate. |
+| `certificate_authorities_name` | `"ca.crt"` | Filename of the CA certificate. |
 
-| **Variable** | **Default Value** | **Possible Values** | **Description** |
-|--------------| ----------------- | ------------------- | --------------- |
-|es_url|"elasticsearch/elasticsearch-{{ elasticsearch_version }}"|Url for es|Url for es|
-|es_service|elasticsearch.service|Service file name|Service file name|
-|es|elasticsearch|elasticsearch|Es name|
-|es_jvm_dump|/var/lib/elasticsearch/heap|Any path|Path to jvm dump|
-|log_path|/var/log/elasticsearch|Any path|Es log path|
-|data_path|/var/lib/elasticsearch|Any path|Path to es data|
-|systemd_path|/usr/lib/systemd/system|/usr/lib/systemd/system|service file path|
-|conf|/etc/elasticsearch/|/etc/elasticsearch/|es config file path|
+### Networking & Discovery
 
-
-## Node defination:
-
-Define your type of nodes in host/inventory file based on the below format. Can increase the node counts as much you want.
-
-```
-[es]
-es1 ansible_host=127.0.0.1 ansible_ssh_user=root
-es2 ansible_host=127.0.0.2 ansible_ssh_user=root
-es3 ansible_host=127.0.0.3 ansible_ssh_user=root
-[esm]
-esm1 ansible_host=127.0.0.1 ansible_ssh_user=root
-esm2 ansible_host=127.0.0.2 ansible_ssh_user=root
-[esd]
-esd1 ansible_host=127.0.0.1 ansible_ssh_user=root
-esd2 ansible_host=127.0.0.2 ansible_ssh_user=root
-[esc]
-esc1 ansible_host=127.0.0.3 ansible_ssh_user=root
-
-```
-Where,  
-es: all es servers
-esm: is master node information  
-esd: is data node information  
-esc: is client node information
-
-
-
-add all es servers IP under group es. The add the specific server ip whom u want to be a master node in the group [esm], special mention this server need to be present in [es] group.do the same for data node and client node.
-
-Remember that one same server can be used for data and master node but for clients we need a specific server.  
-
-## Example Playbook
-```
----
-- hosts: all
-  become: true
-  roles:
-    - osm_elasticsearch_cluster
-```
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `http_port` | `9200` | Port for client communication. |
+| `tcp_port` | `9300` | Port for inter-node transport. |
+| `es_seed_hosts_group` | `"esm"` | Inventory group used for discovery (master nodes). |
 
 ## Usage
 
-There are multiple ways of executing the playbook according to your environment
+### 1. Configure your Inventory
+Define your nodes in groups to assign roles:
+```ini
+[es]
+node1 ansible_host=<ip>
+node2 ansible_host=<ip>
+node3 ansible_host=<ip>
 
-To run the complete role
+[esm]
+node1
+node2
+node3
 ```
-
-ansible-playbook -i hosts site.yml
-```
-To run with TLS encryption and vault
-```
-ansible-playbook -i host --ask-vault-pass site.yml
-```
-
-## TLS encryption enable
-To enable tls encryption first got to the vars/main.yml file and change tls_enable variable value to “yes” then keep all certs in files directory and enter their name in vars/main.yml file. After that encrypt the certs with the vault. Run the bellow command and encrypt the certs and set a password.
-```
-ansible-vault encrypt ca.crt
-```
-Then run the role with the bellow command and u have provide the password that u have used to encrypt the certs.
-```
-ansible-playbook -i host --ask-vault-pass site.yml
+### 2. Set your Credentials (`group_vars/all.yml`)
+```yaml
+es_user: "elasticsearch-opstree"
+es_password: "elasticsearch0610"
+push_certs: false  # Use organization certs already on the server
 ```
 
-you can use this password to encrypt and decrypt the certs
+### 3. Run the Playbook
+```bash
+ansible-playbook -i inventory.ini deploy.yml
 ```
-OcCeybCiWist33367
+
+## Accessing the Cluster
+
+Once deployed, you can verify the cluster health from any node:
+
+**If TLS is Enabled:**
+```bash
+curl -k -u elasticsearch-opstree:elasticsearch0610 https://localhost:9200/_cluster/health?pretty
+```
+
+**If TLS is Disabled:**
+```bash
+curl -u elasticsearch-opstree:elasticsearch0610 http://localhost:9200/_cluster/health?pretty
 ```
 
 ## Author
-
-Moulendu Ghosh
+Originally by Opstree Solutions. 
+Upgraded and modernized for Elasticsearch 9.x production standards.

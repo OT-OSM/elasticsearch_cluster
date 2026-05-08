@@ -1,7 +1,7 @@
 ---
 # update environment for elasticsearch
 - name: Configure elasticsearch service and environment
-  template:
+  ansible.builtin.template:
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
     mode: "0660"
@@ -11,11 +11,10 @@
   notify:
     - reload systemd
     - restart elasticsearch
-  when: standalone == 'no'
 
 # update elasticsearch config files
 - name: Create elasticsearch configuration files.
-  template:
+  ansible.builtin.template:
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
     mode: '0660'
@@ -24,4 +23,3 @@
     - {name: "jvm-{{ es_series }}.options.j2", path: "{{ conf }}jvm.options"}
   notify:
     - restart elasticsearch
-  when: standalone == 'no'

@@ -1,21 +1,40 @@
 ---
 - name: Create certificate directory
-  file:
-    path: "/etc/elasticsearch/certs"
+  ansible.builtin.file:
+    path: "{{ conf }}certs"
     state: directory
     owner: "elasticsearch"
     group: "elasticsearch"
     mode: 0775
+  when: tls_enable | bool
 
 # add certificates in nodes
 - name: Add certificates in nodes
-  copy:
-    src: "{{ item.name }}"
-    dest: "{{ item.path }}"
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     mode: '0660'
+    owner: "elasticsearch"
+    group: "elasticsearch"
   with_items:
-    - {name: "{{ key }}", path: "{{ conf }}certs/{{ es_IP }}-node.key"}
-    - {name: "{{ certificate }}", path: "{{ conf }}certs/{{ es_IP }}-node.crt"}
-    - {name: "{{ certificate_auth }}", path: "{{ conf }}certs/ca.crt"}
+    - { src: "{{ key }}", dest: "{{ conf }}certs/{{ key_name }}" }
+    - { src: "{{ certificate }}", dest: "{{ conf }}certs/{{ certificate_name }}" }
+    - { src: "{{ certificate_auth }}", dest: "{{ conf }}certs/{{ certificate_authorities_name }}" }
+  when: 
+    - tls_enable | bool
+    - push_certs | bool
   notify:
     - restart elasticsearch
+
+- name: Verify certificates exist (when not pushing)
+  ansible.builtin.stat:
+    path: "{{ conf }}certs/{{ item }}"
+  register: cert_status
+  failed_when: not cert_status.stat.exists
+  with_items:
+    - "{{ key_name }}"
+    - "{{ certificate_name }}"
+    - "{{ certificate_authorities_name }}"
+  when: 
+    - tls_enable | bool
+    - not push_certs | bool

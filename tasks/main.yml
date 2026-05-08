@@ -1,42 +1,42 @@
 ---
 # Tasks file for elasticsearch
-- name: Fetch Java version
-  command: java -version
-  become: false
-  changed_when: false
 
 - name: Configuring common configuration
-  include_tasks: common.yml
+  ansible.builtin.include_tasks: common.yml
 
 - name: Include OS Specific setup tasks
-  include_tasks: es-{{ ansible_os_family }}.yml
+  ansible.builtin.include_tasks: "es-{{ ansible_os_family }}.yml"
   when: "'es' in group_names"
 
-- include_tasks: config.yml
+- name: Set system limits for elasticsearch
+  community.general.pam_limits:
+    domain: elasticsearch
+    limit_type: "{{ item.type }}"
+    limit_item: "{{ item.item }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { type: 'soft', item: 'nofile', value: "{{ nofile_limit }}" }
+    - { type: 'hard', item: 'nofile', value: "{{ nofile_limit }}" }
+    - { type: 'soft', item: 'nproc', value: "{{ nproc_limit }}" }
+    - { type: 'hard', item: 'nproc', value: "{{ nproc_limit }}" }
+    - { type: 'soft', item: 'memlock', value: 'unlimited' }
+    - { type: 'hard', item: 'memlock', value: 'unlimited' }
+
+- ansible.builtin.include_tasks: config.yml
   when: "'es' in group_names"
 
-- name: change config for master
-  lineinfile:
-    path: /etc/elasticsearch/elasticsearch.yml
-    line: "node.master: true"
-  when: "'esm' in group_names"
+- name: manage tls certificates
+  ansible.builtin.include_tasks: tls-encryption.yml
+  when: tls_enable | bool
 
+- name: Ensure elasticsearch is started
+  ansible.builtin.service:
+    name: elasticsearch
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  when: "'es' in group_names"
 
-- name: change config for data node
-  lineinfile:
-    path: /etc/elasticsearch/elasticsearch.yml
-    line: "node.data: true"
-  when: "'esd' in group_names"
-
-
-- name: change config for client
-  blockinfile:
-    path: /etc/elasticsearch/elasticsearch.yml
-    block: |
-      node.master: false
-      node.data: false
-  when: "'esc' in group_names"
-
-- name: add tls encryption
-  include_tasks: tls-encryption.yml
-  when: tls_enable == 'yes'
+- name: Configure internal users
+  ansible.builtin.include_tasks: users.yml
+  when: "'es' in group_names"

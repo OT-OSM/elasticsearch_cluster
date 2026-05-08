@@ -1,38 +1,27 @@
 ---
 # install libselinux-python on centos7
 - name: Install net-tools
-  yum: name=net-tools
-
-# Download elasticsearch
-- name: Download rpm.
-  get_url:
-    url: https://artifacts.elastic.co/downloads/{{ es_url }}.rpm
-    dest: /tmp/elasticsearch-{{ elasticsearch_version }}.rpm
-  when: elasticsearch_version is version('6.9.9', '<=')
+  ansible.builtin.yum:
+    name: net-tools
+    state: present
 
 - name: Download rpm.
-  get_url:
-    url: >-
-      https://artifacts.elastic.co/downloads/
-      {{ es_url }}-{{ ansible_machine }}.rpm
-    dest: /tmp/elasticsearch-{{ elasticsearch_version }}.rpm
-  when: elasticsearch_version is version('7.0.0', '>=')
-
-
-# enable openfile limit without restart
-- name: enable open file witout restart
-  shell: "ulimit -n 4096"
-  changed_when: true
+  ansible.builtin.get_url:
+    url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ elasticsearch_version }}-x86_64.rpm"
+    dest: "/tmp/elasticsearch-{{ elasticsearch_version }}.rpm"
+    mode: '0644'
 
 # Install rpm file elasticsearch
 - name: install elasticsearch
-  yum: name=/tmp/elasticsearch-{{ elasticsearch_version }}.rpm state=present
+  ansible.builtin.yum:
+    name: "/tmp/elasticsearch-{{ elasticsearch_version }}.rpm"
+    state: present
   notify:
     - restart elasticsearch
 
 # Create directory for es_data and heap_dump storage
 - name: Create data_path directory
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: elasticsearch
@@ -44,7 +33,3 @@
     - "{{ es_jvm_dump }}"
   notify:
     - restart elasticsearch
-
-# Enable elaticsearch
-- name: Enable elasticsearch
-  systemd: name=elasticsearch enabled=yes
