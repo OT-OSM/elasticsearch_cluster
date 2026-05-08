@@ -11,6 +11,10 @@ This Ansible role automates the deployment of a secure, production-ready Elastic
   - **Automated User Bootstrapping**: Automatically creates a custom administrative user with superuser privileges.
 - **Robust Discovery**: Intelligent bootstrapping logic for `discovery.seed_hosts` and `cluster.initial_master_nodes` that handles both new clusters and single-node setups.
 - **Performance Optimized**: Automatically configures critical OS settings (`vm.max_map_count`, `swappiness`, PAM limits) and manages JVM heap allocation.
+- **Automated Backup (Minio/S3)**: 
+  - Integrated support for **S3-compatible** storage (Minio).
+  - Securely manages credentials using the **Elasticsearch Keystore**.
+  - Automated **SLM (Snapshot Lifecycle Management)** policies for daily backups and retention (cleanup).
 - **Multi-OS Support**: Optimized for Ubuntu 20.04/22.04, Debian 11/12, and RHEL 8/9.
 
 ## Supported Operating Systems
@@ -56,6 +60,17 @@ Variables are defined in `defaults/main.yml`. You should override these in `grou
 |----------|---------|-------------|
 | `http_port` | `9200` | Port for client communication. |
 | `tcp_port` | `9300` | Port for inter-node transport. |
+
+### Backup & Snapshots (Minio/S3)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `es_backup_enabled` | `true` | Enable automated Minio/S3 backup integration. |
+| `es_minio_endpoint` | `""` | The S3 API endpoint for Minio (e.g., `minio.example.com:9000`). |
+| `es_minio_access_key` | `""` | Minio Access Key (Sensitive). |
+| `es_minio_secret_key` | `""` | Minio Secret Key (Sensitive). |
+| `es_minio_bucket` | `""` | The bucket name in Minio for storing snapshots. |
+| `es_snapshot_repo_name` | `"minio_backup"` | The internal name for the snapshot repository. |
 | `es_seed_hosts_group` | `"esm"` | Inventory group used for discovery (master nodes). |
 
 ## Usage
@@ -76,8 +91,8 @@ node3
 
 ### 2. Set your Credentials (`group_vars/all.yml`)
 ```yaml
-es_user: "elasticsearch-opstree"
-es_password: "elasticsearch0610"
+es_user: ""
+es_password: ""
 push_certs: false  # Use organization certs already on the server
 ```
 
@@ -92,12 +107,12 @@ Once deployed, you can verify the cluster health from any node:
 
 **If TLS is Enabled:**
 ```bash
-curl -k -u elasticsearch-opstree:elasticsearch0610 https://localhost:9200/_cluster/health?pretty
+curl -k -u username:password https://localhost:9200/_cluster/health?pretty
 ```
 
 **If TLS is Disabled:**
 ```bash
-curl -u elasticsearch-opstree:elasticsearch0610 http://localhost:9200/_cluster/health?pretty
+curl -u username:password http://localhost:9200/_cluster/health?pretty
 ```
 
 ## Author
