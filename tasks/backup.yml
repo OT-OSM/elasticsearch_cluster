@@ -57,3 +57,26 @@
     status_code: 200
     validate_certs: false
   run_once: true
+
+- name: Create SLM policy for daily snapshots
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host }}:{{ http_port }}/_slm/policy/daily-snapshots"
+    method: PUT
+    user: "{{ es_user }}"
+    password: "{{ es_password }}"
+    force_basic_auth: yes
+    body_format: json
+    body:
+      schedule: "0 0 0 * * ?"  # Every day at midnight
+      name: "<daily-snapshot-{now/d}>"
+      repository: "{{ es_snapshot_repo_name }}"
+      config:
+        indices: "*"
+        include_global_state: true
+      retention:
+        expire_after: "30d"
+        min_count: 5
+        max_count: 50
+    status_code: 200
+    validate_certs: false
+  run_once: true
