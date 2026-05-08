@@ -36,3 +36,7 @@
 
 - name: Configure internal users
   ansible.builtin.include_tasks: users.yml
+
+- name: Integrate Minio Backup
+  ansible.builtin.include_tasks: backup.yml
+  when: es_backup_enabled | bool

@@ -1,0 +1,51 @@
+---
+- name: Check if repository-s3 plugin is installed
+  ansible.builtin.command:
+    cmd: "/usr/share/elasticsearch/bin/elasticsearch-plugin list"
+  register: installed_plugins
+  changed_when: false
+
+- name: Install repository-s3 plugin
+  ansible.builtin.command:
+    cmd: "/usr/share/elasticsearch/bin/elasticsearch-plugin install {{ es_s3_plugin_name }} --batch"
+  when: es_s3_plugin_name not in installed_plugins.stdout
+  notify: restart elasticsearch
+
+- name: Check if Minio credentials are in keystore
+  ansible.builtin.command:
+    cmd: "/usr/share/elasticsearch/bin/elasticsearch-keystore list"
+  register: keystore_list
+  changed_when: false
+
+- name: Add Minio access key to keystore
+  ansible.builtin.shell:
+    cmd: "echo {{ es_minio_access_key }} | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key"
+  when: "'s3.client.default.access_key' not in keystore_list.stdout"
+  notify: restart elasticsearch
+
+- name: Add Minio secret key to keystore
+  ansible.builtin.shell:
+    cmd: "echo {{ es_minio_secret_key }} | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key"
+  when: "'s3.client.default.secret_key' not in keystore_list.stdout"
+  notify: restart elasticsearch
+
+- name: Flush handlers to ensure Elasticsearch is restarted before repo registration
+  ansible.builtin.meta: flush_handlers
+
+- name: Register Minio snapshot repository
+  ansible.builtin.uri:
+    url: "http://localhost:{{ http_port }}/_snapshot/{{ es_snapshot_repo_name }}"
+    method: PUT
+    user: "{{ es_user }}"
+    password: "{{ es_password }}"
+    force_basic_auth: yes
+    body_format: json
+    body:
+      type: "s3"
+      settings:
+        bucket: "{{ es_minio_bucket }}"
+        endpoint: "{{ es_minio_endpoint }}"
+        protocol: "{{ es_minio_protocol }}"
+        path_style_access: "{{ es_minio_path_style_access }}"
+    status_code: 200
+  run_once: true

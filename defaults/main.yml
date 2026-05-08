@@ -53,3 +53,17 @@ nproc_limit: "5000"
 swapness: "1"
 vm_max_count: "2621444"
 m_lock: false
+# ------------------------------------------------------------------------------
+# Backup & Snapshot Configuration (Minio/S3)
+# ------------------------------------------------------------------------------
+es_backup_enabled: true
+es_s3_plugin_name: "repository-s3"
+es_snapshot_repo_name: "minio_backup"
+
+# Minio Connection Details (Override these in group_vars)
+es_minio_endpoint: "minio.example.com:9000"
+es_minio_access_key: "demo_access_key"
+es_minio_secret_key: "demo_secret_key"
+es_minio_bucket: "demo-bucket"
+es_minio_protocol: "https"
+es_minio_path_style_access: true
