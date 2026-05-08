@@ -17,9 +17,11 @@
   ansible.builtin.template:
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
-    mode: '0660'
+    owner: "root"
+    group: "elasticsearch"
+    mode: "0660"
   with_items:
-    - {name: "{{ es }}-{{ es_series }}.yml.j2", path: "{{ conf }}{{ es }}.yml"}
-    - {name: "jvm-{{ es_series }}.options.j2", path: "{{ conf }}jvm.options"}
+    - { name: 'elasticsearch-9.yml.j2', path: '{{ conf }}elasticsearch.yml' }
+    - { name: 'jvm-9.options.j2', path: '{{ conf }}jvm.options' }
   notify:
     - restart elasticsearch
