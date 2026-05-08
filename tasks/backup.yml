@@ -32,6 +32,12 @@
 - name: Flush handlers to ensure Elasticsearch is restarted before repo registration
   ansible.builtin.meta: flush_handlers
 
+- name: Wait for Elasticsearch to be ready on port {{ http_port }}
+  ansible.builtin.wait_for:
+    port: "{{ http_port }}"
+    delay: 10
+    timeout: 60
+
 - name: Register Minio snapshot repository
   ansible.builtin.uri:
     url: "http://localhost:{{ http_port }}/_snapshot/{{ es_snapshot_repo_name }}"
