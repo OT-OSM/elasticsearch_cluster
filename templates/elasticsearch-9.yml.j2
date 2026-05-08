@@ -105,7 +105,9 @@ xpack.security.http.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/{{ 
 
 # Transport SSL
 xpack.security.transport.ssl.enabled: {{ tls_enable | lower }}
+{% if tls_enable | bool %}
 xpack.security.transport.ssl.verification_mode: {{ es_transport_ssl_verification_mode }}
 xpack.security.transport.ssl.key: /etc/elasticsearch/certs/{{ key_name }}
 xpack.security.transport.ssl.certificate: /etc/elasticsearch/certs/{{ certificate_name }}
 xpack.security.transport.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/{{ certificate_authorities_name }}" ]
+{% endif %}
