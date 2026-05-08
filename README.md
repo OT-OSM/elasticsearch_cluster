@@ -73,6 +73,7 @@ node1
 node2
 node3
 ```
+
 ### 2. Set your Credentials (`group_vars/all.yml`)
 ```yaml
 es_user: "elasticsearch-opstree"

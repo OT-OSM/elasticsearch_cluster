@@ -77,7 +77,8 @@ discovery.seed_hosts: {{ zen_host }}
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
 cluster.initial_master_nodes:
-{% for host in groups[es_seed_hosts_group] | default([inventory_hostname]) %}
+{% set seed_hosts = groups[es_seed_hosts_group] | default(ansible_play_batch) %}
+{% for host in seed_hosts %}
 - {{ hostvars[host]['ansible_default_ipv4']['address'] }}
 {% endfor %}
 {% endif %}

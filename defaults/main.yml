@@ -11,12 +11,12 @@ es_jvm_dump: /var/lib/elasticsearch/heap
 data_path: /var/lib/elasticsearch
 log_path: /var/log/elasticsearch
 es_IP: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-es_seed_hosts_group: "esm"
+es_seed_hosts_group: "es"
 standalone: false
 
 zen_host: >-
-  {{ groups[es_seed_hosts_group] | default([inventory_hostname]) | map('extract', hostvars,
-  ['ansible_default_ipv4', 'address']) | list | to_json }}
+  {% set seed_hosts = groups[es_seed_hosts_group] | default(ansible_play_batch) %}
+  {{ seed_hosts | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list | to_json }}
 
 min_heap: "{{ ansible_memtotal_mb // 2 }}m"
 max_heap: "{{ ansible_memtotal_mb // 2 }}m"

@@ -6,7 +6,6 @@
 
 - name: Include OS Specific setup tasks
   ansible.builtin.include_tasks: "es-{{ ansible_os_family }}.yml"
-  when: "'es' in group_names"
 
 - name: Set system limits for elasticsearch
   community.general.pam_limits:
@@ -23,7 +22,6 @@
     - { type: 'hard', item: 'memlock', value: 'unlimited' }
 
 - ansible.builtin.include_tasks: config.yml
-  when: "'es' in group_names"
 
 - name: manage tls certificates
   ansible.builtin.include_tasks: tls-encryption.yml
@@ -35,8 +33,6 @@
     state: started
     enabled: yes
     daemon_reload: yes
-  when: "'es' in group_names"
 
 - name: Configure internal users
   ansible.builtin.include_tasks: users.yml
-  when: "'es' in group_names"
