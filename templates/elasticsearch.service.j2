@@ -42,10 +42,10 @@ LimitAS=infinity
 LimitFSIZE=infinity
 
 # Timeout start
-TimeoutStartSec=0
+TimeoutStartSec=60s
 
 # Disable timeout logic and wait until process is stopped
-TimeoutStopSec=0
+TimeoutStopSec=60s
 
 # SIGTERM signal is used to stop the Java process
 KillSignal=SIGTERM
@@ -54,7 +54,7 @@ KillSignal=SIGTERM
 KillMode=process
 
 # Java process is never killed
-SendSIGKILL=no
+SendSIGKILL=yes
 
 # When a JVM receives a SIGTERM signal it exits with code 143
 SuccessExitStatus=143
