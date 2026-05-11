@@ -56,17 +56,19 @@ xpack.security.authc.realms:
     order: 0
   file.file1:
     order: 1
-  oidc.{{ elasticsearch_oidc_realm_name }}:
-    order: 2
-    rp.client_id: "{{ elasticsearch_oidc_rp_client_id }}"
-    rp.response_type: "code"
-    rp.redirect_uri: "{{ elasticsearch_oidc_rp_redirect_uri }}"
-    op.issuer: "{{ elasticsearch_oidc_op_issuer }}"
-    op.jwkset_path: "{{ elasticsearch_oidc_op_issuer }}/protocol/openid-connect/certs"
-    op.authorization_endpoint: "{{ elasticsearch_oidc_op_issuer }}/protocol/openid-connect/auth"
-    op.token_endpoint: "{{ elasticsearch_oidc_op_issuer }}/protocol/openid-connect/token"
-    op.userinfo_endpoint: "{{ elasticsearch_oidc_op_issuer }}/protocol/openid-connect/userinfo"
-    claims.principal: sub
+{% for realm in elasticsearch_oidc_realms %}
+  oidc.{{ realm.name }}:
+    order: {{ realm.order }}
+    rp.client_id: "{{ realm.rp_client_id }}"
+    rp.response_type: "{{ realm.rp_response_type }}"
+    rp.redirect_uri: "{{ realm.rp_redirect_uri }}"
+    op.issuer: "{{ realm.op_issuer }}"
+    op.jwkset_path: "{{ realm.op_issuer }}/protocol/openid-connect/certs"
+    op.authorization_endpoint: "{{ realm.op_issuer }}/protocol/openid-connect/auth"
+    op.token_endpoint: "{{ realm.op_issuer }}/protocol/openid-connect/token"
+    op.userinfo_endpoint: "{{ realm.op_issuer }}/protocol/openid-connect/userinfo"
+    claims.principal: {{ realm.claims_principal }}
+{% endfor %}
 {% endif %}
 # ----------------------------------- Memory -----------------------------------
 #

@@ -14,12 +14,21 @@
 
 - name: Add OIDC Client Secret to Elasticsearch Keystore
   ansible.builtin.shell: |
-    echo "{{ elasticsearch_oidc_rp_client_secret }}" | {{ elasticsearch_home }}/bin/elasticsearch-keystore add -x -f 'xpack.security.authc.realms.oidc.{{ elasticsearch_oidc_realm_name }}.rp.client_secret'
+    echo "{{ item.rp_client_secret }}" | {{ elasticsearch_home }}/bin/elasticsearch-keystore add -x -f 'xpack.security.authc.realms.oidc.{{ item.name }}.rp.client_secret'
+  with_items: "{{ elasticsearch_oidc_realms }}"
   when: elasticsearch_oidc_enable | bool
   register: keystore_oidc
-  changed_when: keystore_oidc.rc == 0
-  no_log: false
+  changed_when: keystore_oidc.results | selectattr('changed', 'equalto', true) | list | length > 0
+  no_log: true
   notify: Restart elasticsearch
+
+- name: Ensure Elasticsearch keystore has correct permissions
+  ansible.builtin.file:
+    path: "{{ elasticsearch_conf_path }}/elasticsearch.keystore"
+    owner: "root"
+    group: "elasticsearch"
+    mode: '0660'
+  when: elasticsearch_oidc_enable | bool
 
 - name: Flush handlers to restart Elasticsearch with new keystore
   ansible.builtin.meta: flush_handlers
@@ -33,7 +42,7 @@
 
 - name: Configure OIDC Role Mapping for Keycloak
   ansible.builtin.uri:
-    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_security/role_mapping/oidc_keycloak_mapping"
+    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_security/role_mapping/oidc_{{ item.name }}_mapping"
     method: POST
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
@@ -44,7 +53,8 @@
       roles: ["superuser"]
       rules:
         all:
-          - field: { realm.name: "{{ elasticsearch_oidc_realm_name }}" }
+          - field: { realm.name: "{{ item.name }}" }
     status_code: [200, 201]
     validate_certs: false
+  with_items: "{{ elasticsearch_oidc_realms }}"
   when: elasticsearch_oidc_enable | bool
