@@ -94,6 +94,7 @@ elasticsearch_minio_access_key: "demo_access_key"
 elasticsearch_minio_secret_key: "demo_secret_key"
 elasticsearch_minio_bucket: "demo-bucket"
 elasticsearch_minio_protocol: "https"
+elasticsearch_minio_region: "us-east-1"
 elasticsearch_minio_path_style_access: true
 
 # ------------------------------------------------------------------------------
