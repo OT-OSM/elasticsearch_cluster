@@ -51,8 +51,10 @@
       type: "s3"
       settings:
         bucket: "{{ elasticsearch_minio_bucket }}"
+        base_path: "/"
         client: "default"
-    status_code: 200
+        readonly: false
+    status_code: [200, 201]
     validate_certs: false
   run_once: true
 
