@@ -8,6 +8,8 @@ server.name: "{{ elasticsearch_dashboard_server_name }}"
 
 # --- Backend Connectivity ---
 opensearch.hosts: ["{{ elasticsearch_api_protocol }}://localhost:{{ elasticsearch_http_port }}"]
+opensearch.username: "{{ elasticsearch_user }}"
+opensearch.password: "{{ elasticsearch_password }}"
 opensearch.ssl.verificationMode: none
 
 # --- Security & Authentication ---
