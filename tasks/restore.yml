@@ -19,7 +19,7 @@
   ansible.builtin.debug:
     msg: "Attempting to restore snapshot: {{ target_snapshot }}"
 
-- name: Restore snapshot from Minio
+- name: Restore snapshot from Minio with unique timestamp prefix
   ansible.builtin.uri:
     url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}/{{ target_snapshot }}/_restore"
     method: POST
@@ -31,7 +31,7 @@
       indices: "{{ elasticsearch_restore_indices }}"
       include_global_state: false
       rename_pattern: "(.+)"
-      rename_replacement: "{{ elasticsearch_restore_prefix }}$1"
+      rename_replacement: "{{ elasticsearch_restore_prefix }}{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}-$1"
     status_code: 200
     validate_certs: false
   register: restore_result
