@@ -115,6 +115,7 @@ action.destructive_requires_name: true
 #
 xpack.security.enabled: {{ elasticsearch_security_enabled | lower }}
 xpack.security.enrollment.enabled: {{ elasticsearch_enrollment_enabled | lower }}
+xpack.security.authc.token.enabled: {{ elasticsearch_oidc_enable | lower }}
 
 # HTTP SSL
 xpack.security.http.ssl.enabled: {{ elasticsearch_http_ssl_enabled | lower }}
