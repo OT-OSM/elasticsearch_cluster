@@ -17,7 +17,7 @@
     name: "/tmp/elasticsearch-{{ elasticsearch_version }}.rpm"
     state: present
   notify:
-    - restart elasticsearch
+    - Restart elasticsearch
 
 # Create directory for data and heap_dump storage
 - name: Create data and heap dump directories
@@ -32,4 +32,4 @@
     - "{{ elasticsearch_data_path }}"
     - "{{ elasticsearch_jvm_dump }}"
   notify:
-    - restart elasticsearch
+    - Restart elasticsearch

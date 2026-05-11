@@ -24,7 +24,7 @@
     - elasticsearch_tls_enable | bool
     - elasticsearch_push_certs | bool
   notify:
-    - restart elasticsearch
+    - Restart elasticsearch
 
 - name: Verify certificates exist (when not pushing)
   ansible.builtin.stat:

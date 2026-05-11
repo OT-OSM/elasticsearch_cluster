@@ -14,13 +14,8 @@ This Ansible role automates the deployment of a secure, production-ready Elastic
 - **Automated Backup (Minio/S3)**: 
   - Integrated support for **S3-compatible** storage (Minio).
   - Securely manages credentials using the **Elasticsearch Keystore**.
-<<<<<<< HEAD
-  - Automated **SLM (Snapshot Lifecycle Management)** policies for daily backups and retention (cleanup).
-- **Multi-OS Support**: Optimized for Ubuntu 20.04/22.04, Debian 11/12, and RHEL 8/9.
-=======
   - Automated **SLM (Snapshot Lifecycle Management)** policies for daily backups and retention.
 - **Multi-OS Support**: Optimized for Ubuntu, Debian, and RHEL-based systems.
->>>>>>> 7560f46 (added)
 
 ## Supported Operating Systems
 
@@ -65,43 +60,20 @@ Variables are defined in `defaults/main.yml`. Prefix all overrides with `elastic
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-<<<<<<< HEAD
-| `http_port` | `9200` | Port for client communication. |
-| `tcp_port` | `9300` | Port for inter-node transport. |
-
-### Backup & Snapshots (Minio/S3)
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `es_backup_enabled` | `true` | Enable automated Minio/S3 backup integration. |
-| `es_minio_endpoint` | `""` | The S3 API endpoint for Minio (e.g., `minio.example.com:9000`). |
-| `es_minio_access_key` | `""` | Minio Access Key (Sensitive). |
-| `es_minio_secret_key` | `""` | Minio Secret Key (Sensitive). |
-| `es_minio_bucket` | `""` | The bucket name in Minio for storing snapshots. |
-| `es_snapshot_repo_name` | `"minio_backup"` | The internal name for the snapshot repository. |
-| `es_seed_hosts_group` | `"esm"` | Inventory group used for discovery (master nodes). |
-=======
 | `elasticsearch_backup_enabled` | `true` | Enable automated Minio/S3 backup integration. |
 | `elasticsearch_minio_endpoint` | `""` | The S3 API endpoint for Minio. |
 | `elasticsearch_slm_policy_name` | `"daily-snapshots"` | Name of the SLM policy. |
 | `elasticsearch_snapshot_repo_name` | `"minio_backup"` | Snapshot repository name. |
->>>>>>> 7560f46 (added)
 
 ## Usage
 
 ### 1. Set your Credentials (`group_vars/all.yml`)
 ```yaml
-<<<<<<< HEAD
-es_user: ""
-es_password: ""
-push_certs: false  # Use organization certs already on the server
-=======
 elasticsearch_user: "prod-admin"
 elasticsearch_password: "secure-password"
 elasticsearch_user_roles:
   - superuser
   - kibana_system
->>>>>>> 7560f46 (added)
 ```
 
 ### 2. Run the Playbook
@@ -120,11 +92,7 @@ curl -k -u username:password https://localhost:9200/_cluster/health?pretty
 
 To restore data from Minio, explicitly enable the restore task:
 ```bash
-<<<<<<< HEAD
-curl -u username:password http://localhost:9200/_cluster/health?pretty
-=======
 ansible-playbook -i inventory.ini deploy.yml -e "elasticsearch_restore_enable=true"
->>>>>>> 7560f46 (added)
 ```
 
 ## Author

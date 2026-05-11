@@ -9,8 +9,8 @@
     - {name: "limit.conf.j2", path: "/etc/security/limits.d/{{ elasticsearch_name }}.conf"}
     - {name: "{{ elasticsearch_service }}.j2", path: "{{ elasticsearch_systemd_path }}/{{ elasticsearch_service }}"}
   notify:
-    - reload systemd
-    - restart elasticsearch
+    - Reload systemd
+    - Restart elasticsearch
 
 # Update elasticsearch config files
 - name: Create {{ elasticsearch_name }} configuration files
@@ -24,7 +24,7 @@
     - { name: 'elasticsearch.yml.j2', path: '{{ elasticsearch_conf_path }}/elasticsearch.yml' }
     - { name: 'jvm.options.j2', path: '{{ elasticsearch_conf_path }}/jvm.options' }
   notify:
-    - restart elasticsearch
+    - Restart elasticsearch
 
 - name: Ensure correct ownership and permissions for configuration directory
   ansible.builtin.file:

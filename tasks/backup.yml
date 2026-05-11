@@ -9,7 +9,7 @@
   ansible.builtin.command:
     cmd: "{{ elasticsearch_home }}/bin/elasticsearch-plugin install {{ elasticsearch_s3_plugin_name }} --batch"
   when: elasticsearch_s3_plugin_name not in installed_plugins.stdout
-  notify: restart elasticsearch
+  notify: Restart elasticsearch
 
 - name: Check if Minio credentials are in keystore
   ansible.builtin.command:
@@ -21,13 +21,13 @@
   ansible.builtin.shell:
     cmd: "echo {{ elasticsearch_minio_access_key }} | {{ elasticsearch_home }}/bin/elasticsearch-keystore add --stdin s3.client.default.access_key"
   when: "'s3.client.default.access_key' not in keystore_list.stdout"
-  notify: restart elasticsearch
+  notify: Restart elasticsearch
 
 - name: Add Minio secret key to keystore
   ansible.builtin.shell:
     cmd: "echo {{ elasticsearch_minio_secret_key }} | {{ elasticsearch_home }}/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key"
   when: "'s3.client.default.secret_key' not in keystore_list.stdout"
-  notify: restart elasticsearch
+  notify: Restart elasticsearch
 
 - name: Flush handlers to ensure Elasticsearch is restarted before repo registration
   ansible.builtin.meta: flush_handlers
