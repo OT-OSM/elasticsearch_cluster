@@ -19,18 +19,12 @@
 
 - name: Add Minio access key to keystore
   ansible.builtin.shell:
-    cmd: "echo {{ elasticsearch_minio_access_key }} | {{ elasticsearch_home }}/bin/elasticsearch-keystore add --stdin --force s3.client.default.access_key"
-  become: true
-  become_user: "{{ elasticsearch_name }}"
-  become_flags: "-s /bin/bash"
+    cmd: 'su -s /bin/bash {{ elasticsearch_name }} -c "echo {{ elasticsearch_minio_access_key }} | {{ elasticsearch_home }}/bin/elasticsearch-keystore add --stdin --force s3.client.default.access_key"'
   notify: Restart elasticsearch
 
 - name: Add Minio secret key to keystore
   ansible.builtin.shell:
-    cmd: "echo {{ elasticsearch_minio_secret_key }} | {{ elasticsearch_home }}/bin/elasticsearch-keystore add --stdin --force s3.client.default.secret_key"
-  become: true
-  become_user: "{{ elasticsearch_name }}"
-  become_flags: "-s /bin/bash"
+    cmd: 'su -s /bin/bash {{ elasticsearch_name }} -c "echo {{ elasticsearch_minio_secret_key }} | {{ elasticsearch_home }}/bin/elasticsearch-keystore add --stdin --force s3.client.default.secret_key"'
   notify: Restart elasticsearch
 
 - name: Flush handlers to ensure Elasticsearch is restarted before repo registration
