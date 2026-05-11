@@ -47,6 +47,25 @@ path.data: {{ elasticsearch_data_path }}
 #
 path.logs: {{ elasticsearch_log_path }}
 #
+{% if elasticsearch_oidc_enable | bool %}
+# ------------------------------------------------------------------------------
+# OIDC / Keycloak SSO Configuration
+# ------------------------------------------------------------------------------
+xpack.security.authc.realms.oidc.{{ elasticsearch_oidc_realm_name }}:
+  order: 2
+  rp.client_id: "{{ elasticsearch_oidc_rp_client_id }}"
+  rp.response_type: "code"
+  rp.redirect_uri: "{{ elasticsearch_oidc_rp_redirect_uri }}"
+  op.issuer: "{{ elasticsearch_oidc_op_issuer }}"
+  # Automated discovery of endpoints via the issuer URL
+  op.jwkset_path: "{{ elasticsearch_oidc_op_issuer }}/protocol/openid-connect/certs"
+  op.authorization_endpoint: "{{ elasticsearch_oidc_op_issuer }}/protocol/openid-connect/auth"
+  op.token_endpoint: "{{ elasticsearch_oidc_op_issuer }}/protocol/openid-connect/token"
+  op.userinfo_endpoint: "{{ elasticsearch_oidc_op_issuer }}/protocol/openid-connect/userinfo"
+  claims.principal: sub
+  # Optional: Map groups if you use them in Keycloak
+  # claims.groups: groups
+{% endif %}
 # ----------------------------------- Memory -----------------------------------
 #
 # Lock the memory on startup:
