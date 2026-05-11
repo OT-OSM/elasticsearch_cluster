@@ -24,6 +24,9 @@
 - name: Include configuration tasks
   ansible.builtin.include_tasks: config.yml
 
+- name: Initialize security keystore and users
+  ansible.builtin.include_tasks: keystore.yml
+
 - name: Manage TLS certificates
   ansible.builtin.include_tasks: tls-encryption.yml
   when: elasticsearch_tls_enable | bool
@@ -35,7 +38,7 @@
     enabled: true
     daemon_reload: true
 
-- name: Configure internal users
+- name: Configure security API settings
   ansible.builtin.include_tasks: users.yml
 
 - name: Integrate Minio Backup
