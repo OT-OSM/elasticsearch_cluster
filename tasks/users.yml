@@ -14,11 +14,11 @@
 
 - name: Add OIDC Client Secret to Elasticsearch Keystore
   ansible.builtin.shell: |
-    echo "{{ elasticsearch_oidc_rp_client_secret }}" | {{ elasticsearch_home }}/bin/elasticsearch-keystore add -x 'xpack.security.authc.realms.oidc.{{ elasticsearch_oidc_realm_name }}.rp.client_secret'
+    echo "{{ elasticsearch_oidc_rp_client_secret }}" | {{ elasticsearch_home }}/bin/elasticsearch-keystore add -x -f 'xpack.security.authc.realms.oidc.{{ elasticsearch_oidc_realm_name }}.rp.client_secret'
   when: elasticsearch_oidc_enable | bool
   register: keystore_oidc
   changed_when: keystore_oidc.rc == 0
-  no_log: true
+  no_log: false
   notify: Restart elasticsearch
 
 - name: Flush handlers to restart Elasticsearch with new keystore
