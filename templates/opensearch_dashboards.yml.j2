@@ -7,7 +7,7 @@ server.host: "{{ elasticsearch_dashboard_host }}"
 server.name: "{{ elasticsearch_dashboard_server_name }}"
 
 # --- Backend Connectivity ---
-opensearch.hosts: ["{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}"]
+opensearch.hosts: ["{{ elasticsearch_api_protocol }}://localhost:{{ elasticsearch_http_port }}"]
 opensearch.ssl.verificationMode: none
 
 # --- Security & Authentication ---

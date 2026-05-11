@@ -21,3 +21,9 @@
     state: started
     enabled: yes
     daemon_reload: yes
+
+- name: Wait for OpenSearch Dashboards to be ready
+  ansible.builtin.wait_for:
+    port: "{{ elasticsearch_dashboard_port }}"
+    delay: 10
+    timeout: 300
