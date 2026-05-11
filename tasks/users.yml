@@ -21,6 +21,16 @@
   no_log: true
   notify: Restart elasticsearch
 
+- name: Flush handlers to restart Elasticsearch with new keystore
+  ansible.builtin.meta: flush_handlers
+
+- name: Wait for Elasticsearch to be ready for API calls
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host }}"
+    port: "{{ elasticsearch_http_port }}"
+    delay: 10
+    timeout: 300
+
 - name: Configure OIDC Role Mapping for Keycloak
   ansible.builtin.uri:
     url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_security/role_mapping/oidc_keycloak_mapping"
