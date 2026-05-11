@@ -39,6 +39,14 @@
     delay: 10
     timeout: 300
 
+- name: Verify connectivity to Minio endpoint
+  ansible.builtin.wait_for:
+    host: "{{ elasticsearch_minio_host }}"
+    port: "{{ elasticsearch_minio_port }}"
+    timeout: 5
+  register: minio_check
+  ignore_errors: true
+
 - name: Register Minio snapshot repository
   ansible.builtin.uri:
     url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}"
@@ -51,9 +59,9 @@
       type: "s3"
       settings:
         bucket: "{{ elasticsearch_minio_bucket }}"
-        base_path: "/"
         client: "default"
         readonly: false
+        compress: true
     status_code: [200, 201]
     validate_certs: false
   run_once: true
