@@ -19,8 +19,8 @@
 # Xms represents the initial size of total heap space
 # Xmx represents the maximum size of total heap space
 
--Xms{{ min_heap }}
--Xmx{{ max_heap }}
+-Xms{{ elasticsearch_min_heap }}
+-Xmx{{ elasticsearch_max_heap }}
 
 ################################################################
 ## Expert settings
@@ -56,11 +56,11 @@
 
 # specify an alternative path for heap dumps; ensure the directory exists and
 # has sufficient space
--XX:HeapDumpPath={{ es_jvm_dump }}
+-XX:HeapDumpPath={{ elasticsearch_jvm_dump }}
 
 # specify an alternative path for JVM fatal error logs
--XX:ErrorFile={{ log_path }}/hs_err_pid%p.log
+-XX:ErrorFile={{ elasticsearch_log_path }}/hs_err_pid%p.log
 
 # JDK 9+ GC logging
-9-:-Xlog:gc*,gc+age=trace,safepoint:file={{ log_path }}/gc.log:utctime,pid,tags:filecount=32,filesize=64m
+9-:-Xlog:gc*,gc+age=trace,safepoint:file={{ elasticsearch_log_path }}/gc.log:utctime,pid,tags:filecount=32,filesize=64m
 9-:-Djava.locale.providers=COMPAT

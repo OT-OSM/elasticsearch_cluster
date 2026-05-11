@@ -30,10 +30,10 @@ StandardOutput=journal
 StandardError=inherit
 
 # Specifies the maximum file descriptor number that can be opened by this process
-LimitNOFILE={{ nofile_limit }}
+LimitNOFILE={{ elasticsearch_nofile_limit }}
 
 # Specifies the maximum number of processes
-LimitNPROC={{ nproc_limit }}
+LimitNPROC={{ elasticsearch_nproc_limit }}
 
 # Specifies the maximum size of virtual memory
 LimitAS=infinity
@@ -63,4 +63,3 @@ SuccessExitStatus=143
 WantedBy=multi-user.target
 
 # Built for packages-6.5.1 (packages)
-

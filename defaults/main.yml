@@ -1,69 +1,81 @@
 ---
 # Static value ####
 elasticsearch_version: "9.3.4"
-es_series: "9"
-es_url: "elasticsearch/elasticsearch-{{ elasticsearch_version }}"
-es_service: "elasticsearch.service"
-es: "elasticsearch"
+elasticsearch_series: "9"
+elasticsearch_url: "elasticsearch/elasticsearch-{{ elasticsearch_version }}"
+elasticsearch_service: "elasticsearch.service"
+elasticsearch_name: "elasticsearch"
 
 # Static value end #####
-es_jvm_dump: /var/lib/elasticsearch/heap
-data_path: /var/lib/elasticsearch
-log_path: /var/log/elasticsearch
-es_IP: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-es_seed_hosts_group: "es"
-standalone: false
+elasticsearch_home: /usr/share/elasticsearch
+elasticsearch_jvm_dump: /var/lib/elasticsearch/heap
+elasticsearch_data_path: /var/lib/elasticsearch
+elasticsearch_log_path: /var/log/elasticsearch
+elasticsearch_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+elasticsearch_seed_hosts_group: "es"
+elasticsearch_standalone: false
 
-zen_host: >-
-  {% set seed_hosts = groups[es_seed_hosts_group] | default(ansible_play_batch) %}
+elasticsearch_zen_host: >-
+  {% set seed_hosts = groups[elasticsearch_seed_hosts_group] | default(ansible_play_batch) %}
   {{ seed_hosts | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list | to_json }}
 
-min_heap: "{{ ansible_memtotal_mb // 2 }}m"
-max_heap: "{{ ansible_memtotal_mb // 2 }}m"
-systemd_path: /usr/lib/systemd/system
-conf: /etc/elasticsearch/
-key: "{{ key_name }}"
-certificate: "{{ certificate_name }}"
-certificate_auth: "{{ certificate_authorities_name }}"
+elasticsearch_min_heap: "{{ ansible_memtotal_mb // 2 }}m"
+elasticsearch_max_heap: "{{ ansible_memtotal_mb // 2 }}m"
+elasticsearch_systemd_path: /usr/lib/systemd/system
+elasticsearch_conf_path: /etc/elasticsearch
+elasticsearch_key: "{{ elasticsearch_key_name }}"
+elasticsearch_certificate: "{{ elasticsearch_certificate_name }}"
+elasticsearch_certificate_auth: "{{ elasticsearch_ca_name }}"
 
 # TLS & Security Configuration
-tls_enable: true
-push_certs: true
-es_security_enabled: true
-es_enrollment_enabled: true
-es_http_ssl_enabled: true
-es_transport_ssl_verification_mode: "certificate"
+elasticsearch_tls_enable: true
+elasticsearch_push_certs: true
+elasticsearch_security_enabled: true
+elasticsearch_enrollment_enabled: true
+elasticsearch_http_ssl_enabled: true
+elasticsearch_transport_ssl_verification_mode: "certificate"
 
-key_name: "node1.key"
-certificate_name: "node1.crt"
-certificate_authorities_name: "ca.crt"
+elasticsearch_key_name: "node1.key"
+elasticsearch_certificate_name: "node1.crt"
+elasticsearch_ca_name: "ca.crt"
 
 # User Configuration
-es_user: "admin"
-es_password: "password123"
+elasticsearch_user: "admin"
+elasticsearch_password: "password123"
+elasticsearch_user_roles:
+  - "superuser"
 
 # Cluster Configuration
-cluster_name: es-cluster
-http_port: 9200
-tcp_port: 9300
+elasticsearch_cluster_name: es-cluster
+elasticsearch_http_port: 9200
+elasticsearch_tcp_port: 9300
 
 # OS Limits & Tuning
-nofile_limit: "65536"
-nproc_limit: "5000"
-swapness: "1"
-vm_max_count: "2621444"
-m_lock: false
+elasticsearch_nofile_limit: "65536"
+elasticsearch_nproc_limit: "5000"
+elasticsearch_swapness: "1"
+elasticsearch_vm_max_count: "2621444"
+elasticsearch_m_lock: false
 # ------------------------------------------------------------------------------
 # Backup & Snapshot Configuration (Minio/S3)
 # ------------------------------------------------------------------------------
-es_backup_enabled: true
-es_s3_plugin_name: "repository-s3"
-es_snapshot_repo_name: "minio_backup"
+elasticsearch_backup_enabled: true
+elasticsearch_s3_plugin_name: "repository-s3"
+elasticsearch_snapshot_repo_name: "minio_backup"
+elasticsearch_slm_policy_name: "daily-snapshots"
 
 # Minio Connection Details (Override these in group_vars)
-es_minio_endpoint: "minio.example.com:9000"
-es_minio_access_key: "demo_access_key"
-es_minio_secret_key: "demo_secret_key"
-es_minio_bucket: "demo-bucket"
-es_minio_protocol: "https"
-es_minio_path_style_access: true
+elasticsearch_minio_endpoint: "minio.example.com:9000"
+elasticsearch_minio_access_key: "demo_access_key"
+elasticsearch_minio_secret_key: "demo_secret_key"
+elasticsearch_minio_bucket: "demo-bucket"
+elasticsearch_minio_protocol: "https"
+elasticsearch_minio_path_style_access: true
+
+# ------------------------------------------------------------------------------
+# Restore Configuration (Disabled by default for safety)
+# ------------------------------------------------------------------------------
+elasticsearch_restore_enable: false
+elasticsearch_snapshot_name: ""  # If empty, the role can be programmed to find the latest
+elasticsearch_restore_indices: "*"
+elasticsearch_restore_prefix: "restored-"

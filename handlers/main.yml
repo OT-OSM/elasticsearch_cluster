@@ -1,11 +1,11 @@
 ---
-# handlers file for elasticsearch
-- name: restart elasticsearch
+# Handlers file for elasticsearch
+- name: Restart elasticsearch
   ansible.builtin.systemd:
-    name: elasticsearch
+    name: "{{ elasticsearch_service }}"
     state: restarted
 
-# reload systemd after modification
-- name: reload systemd
+# Reload systemd after modification
+- name: Reload systemd
   ansible.builtin.systemd:
-    daemon_reload: yes
+    daemon_reload: true

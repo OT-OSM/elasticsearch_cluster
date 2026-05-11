@@ -14,18 +14,18 @@
 #
 # Use a descriptive name for your cluster:
 #
-cluster.name: {{ cluster_name }}
+cluster.name: {{ elasticsearch_cluster_name }}
 #
 # ------------------------------------ Node ------------------------------------
 #
 # Use a descriptive name for the node:
 #
-node.name: {{ es_IP }}
+node.name: {{ elasticsearch_ip }}
 
 # Node Roles
 node.roles:
-{% if es_node_roles is defined %}
-  {{ es_node_roles | to_json }}
+{% if elasticsearch_node_roles is defined %}
+  {{ elasticsearch_node_roles | to_json }}
 {% elif 'esm' in group_names %}
   [ master, data_content, data_hot ]
 {% elif 'esd' in group_names %}
@@ -41,43 +41,43 @@ node.roles:
 #
 # Path to directory where to store the data (separate multiple locations by comma):
 #
-path.data: {{ data_path }}
+path.data: {{ elasticsearch_data_path }}
 #
 # Path to log files:
 #
-path.logs: {{ log_path }}
+path.logs: {{ elasticsearch_log_path }}
 #
 # ----------------------------------- Memory -----------------------------------
 #
 # Lock the memory on startup:
 #
-bootstrap.memory_lock: {{ m_lock }}
+bootstrap.memory_lock: {{ elasticsearch_m_lock }}
 #
 # ---------------------------------- Network -----------------------------------
 #
 # Set the bind address to a specific IP (IPv4 or IPv6):
 #
-network.host: {{ es_IP }}
+network.host: {{ elasticsearch_ip }}
 #
 # Set a custom port for HTTP:
 #
-http.port: {{ http_port }}
+http.port: {{ elasticsearch_http_port }}
 #
 # --------------------------------- Discovery ----------------------------------
 #
-{% if standalone | bool %}
+{% if elasticsearch_standalone | bool %}
 # Standalone mode
 discovery.type: single-node
 {% else %}
 # Cluster mode
 # Pass an initial list of hosts to perform discovery when new node is started:
 #
-discovery.seed_hosts: {{ zen_host }}
+discovery.seed_hosts: {{ elasticsearch_zen_host }}
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
 cluster.initial_master_nodes:
-{% set seed_hosts = groups[es_seed_hosts_group] | default(ansible_play_batch) %}
+{% set seed_hosts = groups[elasticsearch_seed_hosts_group] | default(ansible_play_batch) %}
 {% for host in seed_hosts %}
 - {{ hostvars[host]['ansible_default_ipv4']['address'] }}
 {% endfor %}
@@ -92,22 +92,22 @@ action.destructive_requires_name: true
 
 # ---------------------------------- Security ----------------------------------
 #
-xpack.security.enabled: {{ es_security_enabled | lower }}
-xpack.security.enrollment.enabled: {{ es_enrollment_enabled | lower }}
+xpack.security.enabled: {{ elasticsearch_security_enabled | lower }}
+xpack.security.enrollment.enabled: {{ elasticsearch_enrollment_enabled | lower }}
 
 # HTTP SSL
-xpack.security.http.ssl.enabled: {{ es_http_ssl_enabled | lower }}
-{% if es_http_ssl_enabled | bool %}
-xpack.security.http.ssl.key: /etc/elasticsearch/certs/{{ key_name }}
-xpack.security.http.ssl.certificate: /etc/elasticsearch/certs/{{ certificate_name }}
-xpack.security.http.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/{{ certificate_authorities_name }}" ]
+xpack.security.http.ssl.enabled: {{ elasticsearch_http_ssl_enabled | lower }}
+{% if elasticsearch_http_ssl_enabled | bool %}
+xpack.security.http.ssl.key: /etc/elasticsearch/certs/{{ elasticsearch_key_name }}
+xpack.security.http.ssl.certificate: /etc/elasticsearch/certs/{{ elasticsearch_certificate_name }}
+xpack.security.http.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/{{ elasticsearch_ca_name }}" ]
 {% endif %}
 
 # Transport SSL
-xpack.security.transport.ssl.enabled: {{ tls_enable | lower }}
-{% if tls_enable | bool %}
-xpack.security.transport.ssl.verification_mode: {{ es_transport_ssl_verification_mode }}
-xpack.security.transport.ssl.key: /etc/elasticsearch/certs/{{ key_name }}
-xpack.security.transport.ssl.certificate: /etc/elasticsearch/certs/{{ certificate_name }}
-xpack.security.transport.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/{{ certificate_authorities_name }}" ]
+xpack.security.transport.ssl.enabled: {{ elasticsearch_tls_enable | lower }}
+{% if elasticsearch_tls_enable | bool %}
+xpack.security.transport.ssl.verification_mode: {{ elasticsearch_transport_ssl_verification_mode }}
+xpack.security.transport.ssl.key: /etc/elasticsearch/certs/{{ elasticsearch_key_name }}
+xpack.security.transport.ssl.certificate: /etc/elasticsearch/certs/{{ elasticsearch_certificate_name }}
+xpack.security.transport.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/{{ elasticsearch_ca_name }}" ]
 {% endif %}

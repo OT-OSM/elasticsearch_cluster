@@ -1,14 +1,30 @@
 ---
 # Set vm.swappiness to 1 in /etc/sysctl.conf
-- name: add vm swappiness
+- name: Add VM swappiness
   ansible.posix.sysctl:
     name: vm.swappiness
-    value: "{{ swapness }}"
+    value: "{{ elasticsearch_swapness }}"
     state: present
 
 # Set virtual max area /etc/sysctl.conf
-- name: add vm max map count
+- name: Add VM max map count
   ansible.posix.sysctl:
     name: vm.max_map_count
-    value: "{{ vm_max_count }}"
+    value: "{{ elasticsearch_vm_max_count }}"
     state: present
+
+# Ensure user and group exist for file ownership
+- name: Ensure {{ elasticsearch_name }} group exists
+  ansible.builtin.group:
+    name: "{{ elasticsearch_name }}"
+    state: present
+    system: true
+
+- name: Ensure {{ elasticsearch_name }} user exists
+  ansible.builtin.user:
+    name: "{{ elasticsearch_name }}"
+    group: "{{ elasticsearch_name }}"
+    state: present
+    system: true
+    create_home: false
+    shell: /bin/false

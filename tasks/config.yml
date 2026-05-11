@@ -1,35 +1,35 @@
 ---
-# update environment for elasticsearch
-- name: Configure elasticsearch service and environment
+# Update environment for elasticsearch
+- name: Configure {{ elasticsearch_name }} service and environment
   ansible.builtin.template:
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
     mode: "0660"
   with_items:
-    - {name: "limit.conf.j2", path: "/etc/security/limits.d/{{ es }}.conf"}
-    - {name: "{{ es_service }}.j2", path: "{{ systemd_path }}/{{ es_service }}"}
+    - {name: "limit.conf.j2", path: "/etc/security/limits.d/{{ elasticsearch_name }}.conf"}
+    - {name: "{{ elasticsearch_service }}.j2", path: "{{ elasticsearch_systemd_path }}/{{ elasticsearch_service }}"}
   notify:
     - reload systemd
     - restart elasticsearch
 
-# update elasticsearch config files
-- name: Create elasticsearch configuration files.
+# Update elasticsearch config files
+- name: Create {{ elasticsearch_name }} configuration files
   ansible.builtin.template:
     src: "{{ item.name }}"
     dest: "{{ item.path }}"
     owner: "root"
-    group: "elasticsearch"
+    group: "{{ elasticsearch_name }}"
     mode: "0660"
   with_items:
-    - { name: 'elasticsearch-9.yml.j2', path: '{{ conf }}elasticsearch.yml' }
-    - { name: 'jvm-9.options.j2', path: '{{ conf }}jvm.options' }
+    - { name: 'elasticsearch.yml.j2', path: '{{ elasticsearch_conf_path }}/elasticsearch.yml' }
+    - { name: 'jvm.options.j2', path: '{{ elasticsearch_conf_path }}/jvm.options' }
   notify:
     - restart elasticsearch
 
 - name: Ensure correct ownership and permissions for configuration directory
   ansible.builtin.file:
-    path: "{{ conf }}"
+    path: "{{ elasticsearch_conf_path }}"
     owner: "root"
-    group: "elasticsearch"
+    group: "{{ elasticsearch_name }}"
     mode: "0770"
-    recurse: yes
+    recurse: true

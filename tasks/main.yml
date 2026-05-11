@@ -7,36 +7,41 @@
 - name: Include OS Specific setup tasks
   ansible.builtin.include_tasks: "es-{{ ansible_os_family }}.yml"
 
-- name: Set system limits for elasticsearch
+- name: Set system limits for {{ elasticsearch_name }}
   community.general.pam_limits:
-    domain: elasticsearch
+    domain: "{{ elasticsearch_name }}"
     limit_type: "{{ item.type }}"
     limit_item: "{{ item.item }}"
     value: "{{ item.value }}"
   with_items:
-    - { type: 'soft', item: 'nofile', value: "{{ nofile_limit }}" }
-    - { type: 'hard', item: 'nofile', value: "{{ nofile_limit }}" }
-    - { type: 'soft', item: 'nproc', value: "{{ nproc_limit }}" }
-    - { type: 'hard', item: 'nproc', value: "{{ nproc_limit }}" }
+    - { type: 'soft', item: 'nofile', value: "{{ elasticsearch_nofile_limit }}" }
+    - { type: 'hard', item: 'nofile', value: "{{ elasticsearch_nofile_limit }}" }
+    - { type: 'soft', item: 'nproc', value: "{{ elasticsearch_nproc_limit }}" }
+    - { type: 'hard', item: 'nproc', value: "{{ elasticsearch_nproc_limit }}" }
     - { type: 'soft', item: 'memlock', value: 'unlimited' }
     - { type: 'hard', item: 'memlock', value: 'unlimited' }
 
-- ansible.builtin.include_tasks: config.yml
+- name: Include configuration tasks
+  ansible.builtin.include_tasks: config.yml
 
-- name: manage tls certificates
+- name: Manage TLS certificates
   ansible.builtin.include_tasks: tls-encryption.yml
-  when: tls_enable | bool
+  when: elasticsearch_tls_enable | bool
 
-- name: Ensure elasticsearch is started
+- name: Ensure {{ elasticsearch_name }} is started
   ansible.builtin.service:
-    name: elasticsearch
+    name: "{{ elasticsearch_service }}"
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true
 
 - name: Configure internal users
   ansible.builtin.include_tasks: users.yml
 
 - name: Integrate Minio Backup
   ansible.builtin.include_tasks: backup.yml
-  when: es_backup_enabled | bool
+  when: elasticsearch_backup_enabled | bool
+
+- name: Restore Data from Minio
+  ansible.builtin.include_tasks: restore.yml
+  when: elasticsearch_restore_enable | bool

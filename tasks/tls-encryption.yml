@@ -1,40 +1,40 @@
 ---
 - name: Create certificate directory
   ansible.builtin.file:
-    path: "{{ conf }}certs"
+    path: "{{ elasticsearch_conf_path }}/certs"
     state: directory
-    owner: "elasticsearch"
-    group: "elasticsearch"
+    owner: "{{ elasticsearch_name }}"
+    group: "{{ elasticsearch_name }}"
     mode: 0775
-  when: tls_enable | bool
+  when: elasticsearch_tls_enable | bool
 
-# add certificates in nodes
+# Add certificates in nodes
 - name: Add certificates in nodes
   ansible.builtin.copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: '0660'
-    owner: "elasticsearch"
-    group: "elasticsearch"
+    owner: "{{ elasticsearch_name }}"
+    group: "{{ elasticsearch_name }}"
   with_items:
-    - { src: "{{ key }}", dest: "{{ conf }}certs/{{ key_name }}" }
-    - { src: "{{ certificate }}", dest: "{{ conf }}certs/{{ certificate_name }}" }
-    - { src: "{{ certificate_auth }}", dest: "{{ conf }}certs/{{ certificate_authorities_name }}" }
+    - { src: "{{ elasticsearch_key }}", dest: "{{ elasticsearch_conf_path }}/certs/{{ elasticsearch_key_name }}" }
+    - { src: "{{ elasticsearch_certificate }}", dest: "{{ elasticsearch_conf_path }}/certs/{{ elasticsearch_certificate_name }}" }
+    - { src: "{{ elasticsearch_certificate_auth }}", dest: "{{ elasticsearch_conf_path }}/certs/{{ elasticsearch_ca_name }}" }
   when: 
-    - tls_enable | bool
-    - push_certs | bool
+    - elasticsearch_tls_enable | bool
+    - elasticsearch_push_certs | bool
   notify:
     - restart elasticsearch
 
 - name: Verify certificates exist (when not pushing)
   ansible.builtin.stat:
-    path: "{{ conf }}certs/{{ item }}"
+    path: "{{ elasticsearch_conf_path }}/certs/{{ item }}"
   register: cert_status
   failed_when: not cert_status.stat.exists
   with_items:
-    - "{{ key_name }}"
-    - "{{ certificate_name }}"
-    - "{{ certificate_authorities_name }}"
+    - "{{ elasticsearch_key_name }}"
+    - "{{ elasticsearch_certificate_name }}"
+    - "{{ elasticsearch_ca_name }}"
   when: 
-    - tls_enable | bool
-    - not push_certs | bool
+    - elasticsearch_tls_enable | bool
+    - not elasticsearch_push_certs | bool

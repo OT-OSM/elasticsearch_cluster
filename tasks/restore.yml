@@ -1,0 +1,41 @@
+---
+- name: Get list of available snapshots from {{ elasticsearch_snapshot_repo_name }}
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}/_all"
+    method: GET
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    status_code: 200
+    validate_certs: false
+  register: snapshot_list
+  when: elasticsearch_snapshot_name == ""
+
+- name: Identify the latest snapshot
+  ansible.builtin.set_fact:
+    target_snapshot: "{{ elasticsearch_snapshot_name if elasticsearch_snapshot_name != '' else (snapshot_list.json.snapshots | sort(attribute='start_time_in_millis') | last).snapshot }}"
+
+- name: Display the snapshot to be restored
+  ansible.builtin.debug:
+    msg: "Attempting to restore snapshot: {{ target_snapshot }}"
+
+- name: Restore snapshot from Minio
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}/{{ target_snapshot }}/_restore"
+    method: POST
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      indices: "{{ elasticsearch_restore_indices }}"
+      include_global_state: false
+      rename_pattern: "(.+)"
+      rename_replacement: "{{ elasticsearch_restore_prefix }}$1"
+    status_code: 200
+    validate_certs: false
+  register: restore_result
+
+- name: Show restore result
+  ansible.builtin.debug:
+    var: restore_result.json

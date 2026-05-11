@@ -1,44 +1,39 @@
 ---
-- name: Add elasticsearch GPG key
+- name: Add {{ elasticsearch_name }} GPG key
   ansible.builtin.apt_key:
     url: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
     state: present
 
-# Install apt-transports package required for Installation of Elasticsearch
-- name: install apt-transports
+# Install apt-transports package required for installation of elasticsearch
+- name: Install apt-transports
   ansible.builtin.apt:
     name: apt-transport-https
     state: present
-    update_cache: yes
+    update_cache: true
 
 # Download elasticsearch
-- name: Add elasticsearch repository...
+- name: Add {{ elasticsearch_name }} repository
   ansible.builtin.apt_repository:
     repo: >-
       deb https://artifacts.elastic.co/packages/{{
-      es_series }}.x/apt stable main
+      elasticsearch_series }}.x/apt stable main
     state: present
 
-- name: Update cache...
-  ansible.builtin.apt:
-    update_cache: yes
-    cache_valid_time: 86400
-
-- name: Installing elasticsearch
+- name: Install {{ elasticsearch_name }}
   ansible.builtin.apt:
     name: "elasticsearch={{ elasticsearch_version }}"
     state: present
-    update_cache: yes
+    update_cache: true
 
-# Create directory for es_data and heap_dump storage
-- name: Create data_path directory
+# Create directory for data and heap_dump storage
+- name: Create data and heap dump directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: elasticsearch
-    group: elasticsearch
+    owner: "{{ elasticsearch_name }}"
+    group: "{{ elasticsearch_name }}"
     mode: 0775
-    recurse: yes
+    recurse: true
   with_items:
-    - "{{ data_path }}"
-    - "{{ es_jvm_dump }}"
+    - "{{ elasticsearch_data_path }}"
+    - "{{ elasticsearch_jvm_dump }}"

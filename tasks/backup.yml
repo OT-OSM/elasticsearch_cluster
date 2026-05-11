@@ -1,75 +1,75 @@
 ---
 - name: Check if repository-s3 plugin is installed
   ansible.builtin.command:
-    cmd: "/usr/share/elasticsearch/bin/elasticsearch-plugin list"
+    cmd: "{{ elasticsearch_home }}/bin/elasticsearch-plugin list"
   register: installed_plugins
   changed_when: false
 
 - name: Install repository-s3 plugin
   ansible.builtin.command:
-    cmd: "/usr/share/elasticsearch/bin/elasticsearch-plugin install {{ es_s3_plugin_name }} --batch"
-  when: es_s3_plugin_name not in installed_plugins.stdout
+    cmd: "{{ elasticsearch_home }}/bin/elasticsearch-plugin install {{ elasticsearch_s3_plugin_name }} --batch"
+  when: elasticsearch_s3_plugin_name not in installed_plugins.stdout
   notify: restart elasticsearch
 
 - name: Check if Minio credentials are in keystore
   ansible.builtin.command:
-    cmd: "/usr/share/elasticsearch/bin/elasticsearch-keystore list"
+    cmd: "{{ elasticsearch_home }}/bin/elasticsearch-keystore list"
   register: keystore_list
   changed_when: false
 
 - name: Add Minio access key to keystore
   ansible.builtin.shell:
-    cmd: "echo {{ es_minio_access_key }} | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.access_key"
+    cmd: "echo {{ elasticsearch_minio_access_key }} | {{ elasticsearch_home }}/bin/elasticsearch-keystore add --stdin s3.client.default.access_key"
   when: "'s3.client.default.access_key' not in keystore_list.stdout"
   notify: restart elasticsearch
 
 - name: Add Minio secret key to keystore
   ansible.builtin.shell:
-    cmd: "echo {{ es_minio_secret_key }} | /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key"
+    cmd: "echo {{ elasticsearch_minio_secret_key }} | {{ elasticsearch_home }}/bin/elasticsearch-keystore add --stdin s3.client.default.secret_key"
   when: "'s3.client.default.secret_key' not in keystore_list.stdout"
   notify: restart elasticsearch
 
 - name: Flush handlers to ensure Elasticsearch is restarted before repo registration
   ansible.builtin.meta: flush_handlers
 
-- name: Wait for Elasticsearch to be ready on port {{ http_port }}
+- name: Wait for Elasticsearch to be ready on port {{ elasticsearch_http_port }}
   ansible.builtin.wait_for:
     host: "{{ ansible_host }}"
-    port: "{{ http_port }}"
+    port: "{{ elasticsearch_http_port }}"
     delay: 10
     timeout: 60
 
 - name: Register Minio snapshot repository
   ansible.builtin.uri:
-    url: "http://{{ ansible_host }}:{{ http_port }}/_snapshot/{{ es_snapshot_repo_name }}"
+    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}"
     method: PUT
-    user: "{{ es_user }}"
-    password: "{{ es_password }}"
-    force_basic_auth: yes
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
     body_format: json
     body:
       type: "s3"
       settings:
-        bucket: "{{ es_minio_bucket }}"
-        endpoint: "{{ es_minio_endpoint }}"
-        protocol: "{{ es_minio_protocol }}"
-        path_style_access: "{{ es_minio_path_style_access }}"
+        bucket: "{{ elasticsearch_minio_bucket }}"
+        endpoint: "{{ elasticsearch_minio_endpoint }}"
+        protocol: "{{ elasticsearch_minio_protocol }}"
+        path_style_access: "{{ elasticsearch_minio_path_style_access }}"
     status_code: 200
     validate_certs: false
   run_once: true
 
-- name: Create SLM policy for daily snapshots
+- name: Create SLM policy for snapshots
   ansible.builtin.uri:
-    url: "http://{{ ansible_host }}:{{ http_port }}/_slm/policy/daily-snapshots"
+    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_slm/policy/{{ elasticsearch_slm_policy_name }}"
     method: PUT
-    user: "{{ es_user }}"
-    password: "{{ es_password }}"
-    force_basic_auth: yes
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
     body_format: json
     body:
       schedule: "0 0 0 * * ?"  # Every day at midnight
-      name: "<daily-snapshot-{now/d}>"
-      repository: "{{ es_snapshot_repo_name }}"
+      name: "<{{ elasticsearch_slm_policy_name }}-{now/d}>"
+      repository: "{{ elasticsearch_snapshot_repo_name }}"
       config:
         indices: "*"
         include_global_state: true
