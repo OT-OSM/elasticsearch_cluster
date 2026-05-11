@@ -39,13 +39,18 @@
     delay: 10
     timeout: 300
 
-- name: Verify connectivity to Minio endpoint
-  ansible.builtin.wait_for:
-    host: "{{ elasticsearch_minio_host }}"
-    port: "{{ elasticsearch_minio_port }}"
-    timeout: 5
-  register: minio_check
+- name: Verify Minio bucket accessibility (Diagnostic)
+  ansible.builtin.shell: |
+    curl -I -u "{{ elasticsearch_minio_access_key }}:{{ elasticsearch_minio_secret_key }}" \
+    "{{ elasticsearch_minio_protocol }}://{{ elasticsearch_minio_endpoint }}/{{ elasticsearch_minio_bucket }}"
+  register: bucket_check
   ignore_errors: true
+  no_log: true
+
+- name: Debug Minio Bucket Check
+  ansible.builtin.debug:
+    msg: "Bucket check returned status: {{ bucket_check.stdout_lines[0] if bucket_check.stdout_lines else 'Failed to connect' }}"
+  when: bucket_check is failed or '200' not in bucket_check.stdout
 
 - name: Register Minio snapshot repository
   ansible.builtin.uri:
