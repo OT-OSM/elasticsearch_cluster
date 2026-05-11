@@ -32,7 +32,7 @@
 
 - name: Wait for Elasticsearch to be ready on port {{ elasticsearch_http_port }}
   ansible.builtin.wait_for:
-    host: "{{ ansible_host }}"
+    host: "0.0.0.0"
     port: "{{ elasticsearch_http_port }}"
     delay: 20
     timeout: 600
