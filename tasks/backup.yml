@@ -50,7 +50,7 @@
 
 - name: Register Minio snapshot repository
   ansible.builtin.uri:
-    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}"
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}"
     method: PUT
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
@@ -69,7 +69,7 @@
 
 - name: Create SLM policy for snapshots
   ansible.builtin.uri:
-    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_slm/policy/{{ elasticsearch_slm_policy_name }}"
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_slm/policy/{{ elasticsearch_slm_policy_name }}"
     method: PUT
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
