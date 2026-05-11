@@ -29,7 +29,7 @@
 - name: Ensure correct ownership and permissions for configuration directory
   ansible.builtin.file:
     path: "{{ elasticsearch_conf_path }}"
-    owner: "root"
+    owner: "{{ elasticsearch_name }}"
     group: "{{ elasticsearch_name }}"
     mode: "0770"
     recurse: true
