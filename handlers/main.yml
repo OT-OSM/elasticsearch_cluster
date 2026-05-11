@@ -5,6 +5,12 @@
     systemctl stop {{ elasticsearch_service }} || true
     pkill -9 -u {{ elasticsearch_name }} || true
     systemctl start {{ elasticsearch_service }}
+
+- name: Restart opensearch-dashboards
+  ansible.builtin.systemd:
+    name: opensearch-dashboards
+    state: restarted
+    daemon_reload: yes
   register: restart_out
   changed_when: true
 

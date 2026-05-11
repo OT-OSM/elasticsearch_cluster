@@ -45,6 +45,10 @@
   ansible.builtin.include_tasks: backup.yml
   when: elasticsearch_backup_enabled | bool
 
+- name: Setup OpenSearch Dashboards
+  ansible.builtin.include_tasks: dashboard.yml
+  when: elasticsearch_dashboard_enabled | bool
+
 - name: Restore Data from Minio
   ansible.builtin.include_tasks: restore.yml
   when: elasticsearch_restore_enable | bool
