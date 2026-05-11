@@ -59,7 +59,6 @@ xpack.security.authc.realms:
   oidc.{{ elasticsearch_oidc_realm_name }}:
     order: 2
     rp.client_id: "{{ elasticsearch_oidc_rp_client_id }}"
-    rp.client_secret: "{{ elasticsearch_oidc_rp_client_secret }}"
     rp.response_type: "code"
     rp.redirect_uri: "{{ elasticsearch_oidc_rp_redirect_uri }}"
     op.issuer: "{{ elasticsearch_oidc_op_issuer }}"
