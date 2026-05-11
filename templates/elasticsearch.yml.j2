@@ -98,16 +98,22 @@ xpack.security.enrollment.enabled: {{ elasticsearch_enrollment_enabled | lower }
 # HTTP SSL
 xpack.security.http.ssl.enabled: {{ elasticsearch_http_ssl_enabled | lower }}
 {% if elasticsearch_http_ssl_enabled | bool %}
-xpack.security.http.ssl.key: /etc/elasticsearch/certs/{{ elasticsearch_key_name }}
-xpack.security.http.ssl.certificate: /etc/elasticsearch/certs/{{ elasticsearch_certificate_name }}
-xpack.security.http.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/{{ elasticsearch_ca_name }}" ]
+xpack.security.http.ssl.key: {{ elasticsearch_conf_path }}/certs/{{ elasticsearch_key_name }}
+xpack.security.http.ssl.certificate: {{ elasticsearch_conf_path }}/certs/{{ elasticsearch_certificate_name }}
+xpack.security.http.ssl.certificate_authorities: [ "{{ elasticsearch_conf_path }}/certs/{{ elasticsearch_ca_name }}" ]
 {% endif %}
 
 # Transport SSL
 xpack.security.transport.ssl.enabled: {{ elasticsearch_tls_enable | lower }}
 {% if elasticsearch_tls_enable | bool %}
 xpack.security.transport.ssl.verification_mode: {{ elasticsearch_transport_ssl_verification_mode }}
-xpack.security.transport.ssl.key: /etc/elasticsearch/certs/{{ elasticsearch_key_name }}
-xpack.security.transport.ssl.certificate: /etc/elasticsearch/certs/{{ elasticsearch_certificate_name }}
-xpack.security.transport.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/{{ elasticsearch_ca_name }}" ]
+xpack.security.transport.ssl.key: {{ elasticsearch_conf_path }}/certs/{{ elasticsearch_key_name }}
+xpack.security.transport.ssl.certificate: {{ elasticsearch_conf_path }}/certs/{{ elasticsearch_certificate_name }}
+xpack.security.transport.ssl.certificate_authorities: [ "{{ elasticsearch_conf_path }}/certs/{{ elasticsearch_ca_name }}" ]
 {% endif %}
+
+# ---------------------------------- S3 / Minio --------------------------------
+#
+s3.client.default.endpoint: "{{ elasticsearch_minio_endpoint }}"
+s3.client.default.protocol: "{{ elasticsearch_minio_protocol }}"
+s3.client.default.path_style_access: {{ elasticsearch_minio_path_style_access | lower }}

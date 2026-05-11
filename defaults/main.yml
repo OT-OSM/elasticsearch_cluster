@@ -1,33 +1,43 @@
 ---
-# Static value ####
-elasticsearch_version: "9.3.4"
-elasticsearch_series: "9"
-elasticsearch_url: "elasticsearch/elasticsearch-{{ elasticsearch_version }}"
-elasticsearch_service: "elasticsearch.service"
-elasticsearch_name: "elasticsearch"
+# ==============================================================================
+# Elasticsearch Cluster Configuration (Defaults)
+# ==============================================================================
 
-# Static value end #####
-elasticsearch_home: /usr/share/elasticsearch
-elasticsearch_jvm_dump: /var/lib/elasticsearch/heap
-elasticsearch_data_path: /var/lib/elasticsearch
-elasticsearch_log_path: /var/log/elasticsearch
+# ------------------------------------------------------------------------------
+# Version & Software
+# ------------------------------------------------------------------------------
+elasticsearch_version: "9.3.4"
+elasticsearch_name: "elasticsearch"
+elasticsearch_home: "/usr/share/elasticsearch"
+elasticsearch_service: "elasticsearch.service"
 elasticsearch_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-elasticsearch_seed_hosts_group: "es"
+
+# ------------------------------------------------------------------------------
+# Cluster Identity
+# ------------------------------------------------------------------------------
+elasticsearch_cluster_name: "es-cluster"
+elasticsearch_http_port: 9200
+elasticsearch_tcp_port: 9300
 elasticsearch_standalone: false
 
-elasticsearch_zen_host: >-
-  {% set seed_hosts = groups[elasticsearch_seed_hosts_group] | default(ansible_play_batch) %}
-  {{ seed_hosts | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list | to_json }}
+# ------------------------------------------------------------------------------
+# Resource Management (JVM)
+# ------------------------------------------------------------------------------
+elasticsearch_min_heap: "1g"
+elasticsearch_max_heap: "1g"
 
-elasticsearch_min_heap: "{{ ansible_memtotal_mb // 2 }}m"
-elasticsearch_max_heap: "{{ ansible_memtotal_mb // 2 }}m"
-elasticsearch_systemd_path: /usr/lib/systemd/system
-elasticsearch_conf_path: /etc/elasticsearch
-elasticsearch_key: "{{ elasticsearch_key_name }}"
-elasticsearch_certificate: "{{ elasticsearch_certificate_name }}"
-elasticsearch_certificate_auth: "{{ elasticsearch_ca_name }}"
+# ------------------------------------------------------------------------------
+# Paths & Directories
+# ------------------------------------------------------------------------------
+elasticsearch_jvm_dump: "/var/lib/elasticsearch/heap"
+elasticsearch_data_path: "/var/lib/elasticsearch"
+elasticsearch_log_path: "/var/log/elasticsearch"
+elasticsearch_systemd_path: "/usr/lib/systemd/system"
+elasticsearch_conf_path: "/etc/elasticsearch"
 
-# TLS & Security Configuration
+# ------------------------------------------------------------------------------
+# Security & Authentication
+# ------------------------------------------------------------------------------
 elasticsearch_tls_enable: true
 elasticsearch_push_certs: true
 elasticsearch_security_enabled: true
@@ -35,27 +45,39 @@ elasticsearch_enrollment_enabled: true
 elasticsearch_http_ssl_enabled: true
 elasticsearch_transport_ssl_verification_mode: "certificate"
 
+# Custom Administrative User
+elasticsearch_user: "admin"
+elasticsearch_password: "password123"
+elasticsearch_user_roles:
+  - superuser
+
+# Certificates filenames
 elasticsearch_key_name: "node1.key"
 elasticsearch_certificate_name: "node1.crt"
 elasticsearch_ca_name: "ca.crt"
 
-# User Configuration
-elasticsearch_user: "admin"
-elasticsearch_password: "password123"
-elasticsearch_user_roles:
-  - "superuser"
+# Source paths (for copy task)
+elasticsearch_key: "{{ elasticsearch_key_name }}"
+elasticsearch_certificate: "{{ elasticsearch_certificate_name }}"
+elasticsearch_certificate_auth: "{{ elasticsearch_ca_name }}"
 
-# Cluster Configuration
-elasticsearch_cluster_name: es-cluster
-elasticsearch_http_port: 9200
-elasticsearch_tcp_port: 9300
+# ------------------------------------------------------------------------------
+# Networking & Discovery
+# ------------------------------------------------------------------------------
+elasticsearch_seed_hosts_group: "esm"
+elasticsearch_zen_host: >-
+  {% set seed_hosts = groups[elasticsearch_seed_hosts_group] | default(ansible_play_batch) %}
+  {{ seed_hosts | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list | to_json }}
 
+# ------------------------------------------------------------------------------
 # OS Limits & Tuning
+# ------------------------------------------------------------------------------
 elasticsearch_nofile_limit: "65536"
 elasticsearch_nproc_limit: "5000"
 elasticsearch_swapness: "1"
-elasticsearch_vm_max_count: "2621444"
+elasticsearch_vm_max_count: "262144"
 elasticsearch_m_lock: false
+
 # ------------------------------------------------------------------------------
 # Backup & Snapshot Configuration (Minio/S3)
 # ------------------------------------------------------------------------------
@@ -65,7 +87,9 @@ elasticsearch_snapshot_repo_name: "minio_backup"
 elasticsearch_slm_policy_name: "daily-snapshots"
 
 # Minio Connection Details (Override these in group_vars)
-elasticsearch_minio_endpoint: "minio.example.com:9000"
+elasticsearch_minio_host: "minio.example.com"
+elasticsearch_minio_port: 9000
+elasticsearch_minio_endpoint: "{{ elasticsearch_minio_host }}:{{ elasticsearch_minio_port }}"
 elasticsearch_minio_access_key: "demo_access_key"
 elasticsearch_minio_secret_key: "demo_secret_key"
 elasticsearch_minio_bucket: "demo-bucket"

@@ -51,9 +51,7 @@
       type: "s3"
       settings:
         bucket: "{{ elasticsearch_minio_bucket }}"
-        endpoint: "{{ elasticsearch_minio_endpoint }}"
-        protocol: "{{ elasticsearch_minio_protocol }}"
-        path_style_access: "{{ elasticsearch_minio_path_style_access }}"
+        client: "default"
     status_code: 200
     validate_certs: false
   run_once: true
