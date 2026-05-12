@@ -24,3 +24,22 @@
     validate_certs: false
   with_items: "{{ elasticsearch_oidc_realms }}"
   when: elasticsearch_oidc_enable | bool
+
+- name: Verify OIDC SSO Configuration (Diagnostic)
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_security/oidc/prepare"
+    method: POST
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      realm: "{{ elasticsearch_oidc_realms[0].name }}"
+    status_code: 200
+  register: oidc_check
+  ignore_errors: yes
+
+- name: Display SSO Redirect URL (Verification)
+  ansible.builtin.debug:
+    msg: "SSO is ACTIVE. Keycloak Redirect URL: {{ oidc_check.json.redirect if oidc_check.json is defined else 'Configuration Error' }}"
+  when: oidc_check.json is defined
