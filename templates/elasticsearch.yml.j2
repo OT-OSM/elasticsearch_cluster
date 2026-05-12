@@ -96,11 +96,10 @@ xpack.security.enabled: {{ elasticsearch_security_enabled | lower }}
 xpack.security.enrollment.enabled: {{ elasticsearch_enrollment_enabled | lower }}
 xpack.security.authc.token.enabled: false
 
-# Allow anonymous access for Load Balancer health checks
-xpack.security.authc.anonymous:
-  username: anonymous_user
-  roles: [ "monitor" ]
-  authz_exception: true
+# Allow anonymous access for Load Balancer and Monitoring
+xpack.security.authc.anonymous.username: anonymous_user
+xpack.security.authc.anonymous.roles: [ "monitor", "viewer" ]
+xpack.security.authc.anonymous.authz_exception: true
 
 # HTTP SSL
 xpack.security.http.ssl.enabled: {{ elasticsearch_http_ssl_enabled | lower }}

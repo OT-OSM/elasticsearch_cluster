@@ -21,14 +21,13 @@
 
 - name: Restore snapshot from Minio with safety filters
   ansible.builtin.uri:
-    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}/{{ target_snapshot }}/_restore"
+    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}/{{ target_snapshot }}/_restore?wait_for_completion=false"
     method: POST
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
     force_basic_auth: true
     body_format: json
     body:
-      # We exclude hidden system indices (starting with dot) to prevent RED status
       indices: "{{ elasticsearch_restore_indices if elasticsearch_restore_indices != '*' else '*,-.*' }}"
       include_global_state: false
       rename_pattern: "(.+)"
@@ -37,9 +36,9 @@
     validate_certs: false
   register: restore_result
 
-- name: Optimize restored indices (Set Replicas to 0 for Single-Node speed)
+- name: Optimize all indices (Set Replicas to 0 for Single-Node speed)
   ansible.builtin.uri:
-    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/{{ elasticsearch_restore_prefix }}*/_settings"
+    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_all/_settings"
     method: PUT
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
