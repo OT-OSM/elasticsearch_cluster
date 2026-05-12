@@ -1,10 +1,11 @@
 ---
 # Handlers file for elasticsearch
 - name: Restart elasticsearch
-  ansible.builtin.shell: |
-    systemctl stop {{ elasticsearch_service }} || true
-    pkill -9 -u {{ elasticsearch_name }} || true
-    systemctl start {{ elasticsearch_service }}
+  ansible.builtin.systemd:
+    name: "{{ elasticsearch_service }}"
+    state: restarted
+    daemon_reload: true
+
 
 # Reload systemd after modification
 - name: Reload systemd
