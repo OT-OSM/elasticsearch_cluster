@@ -1,0 +1,41 @@
+---
+- name: Install Kibana (Debian)
+  ansible.builtin.apt:
+    name: "kibana={{ elasticsearch_version }}"
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install Kibana (RedHat)
+  ansible.builtin.yum:
+    name: "kibana-{{ elasticsearch_version }}"
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Create Kibana configuration file
+  ansible.builtin.template:
+    src: kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+    owner: root
+    group: kibana
+    mode: "0660"
+  notify: Restart kibana
+
+- name: Set kibana_system user password
+  ansible.builtin.uri:
+    url: "http://localhost:9200/_security/user/kibana_system/_password"
+    method: POST
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      password: "{{ elasticsearch_password }}"
+    status_code: [200, 204]
+  ignore_errors: yes
+
+- name: Ensure Kibana is started and enabled
+  ansible.builtin.systemd:
+    name: kibana
+    state: started
+    enabled: yes

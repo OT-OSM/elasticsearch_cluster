@@ -49,6 +49,10 @@
 - name: Configure security API settings
   ansible.builtin.include_tasks: users.yml
 
+- name: Setup Kibana Dashboard
+  ansible.builtin.include_tasks: kibana.yml
+  when: elasticsearch_kibana_enabled | bool
+
 - name: Integrate Minio Backup
   ansible.builtin.include_tasks: backup.yml
   when: elasticsearch_backup_enabled | bool

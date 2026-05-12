@@ -1,0 +1,33 @@
+# =================== Kibana Configuration ===================
+server.port: {{ elasticsearch_kibana_port }}
+server.host: "0.0.0.0"
+server.name: "{{ elasticsearch_kibana_server_name }}"
+server.publicBaseUrl: "https://{{ elasticsearch_kibana_server_name }}"
+
+elasticsearch.hosts: ["http://localhost:9200"]
+elasticsearch.username: "kibana_system"
+elasticsearch.password: "{{ elasticsearch_password }}"
+
+# Security settings
+xpack.security.enabled: true
+
+{% if elasticsearch_kibana_sso_enabled | bool %}
+# OIDC / SSO Configuration
+xpack.security.authc.providers:
+  oidc.oidc1:
+    order: 0
+    realm: "oidc_keycloak"
+    description: "Log in with Keycloak"
+  basic.basic1:
+    order: 1
+{% endif %}
+
+logging:
+  appenders:
+    console:
+      type: console
+      layout:
+        type: pattern
+  root:
+    appenders: [console]
+    level: info
