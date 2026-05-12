@@ -32,6 +32,13 @@
 - name: Flush handlers to ensure Elasticsearch is restarted before repo registration
   ansible.builtin.meta: flush_handlers
 
+- name: Wait for Elasticsearch API to be ready after restart
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host }}"
+    port: "{{ elasticsearch_http_port }}"
+    delay: 5
+    timeout: 300
+
 - name: Verify Minio bucket accessibility (Diagnostic)
   ansible.builtin.shell: |
     curl -I -k "{{ elasticsearch_minio_protocol }}://{{ elasticsearch_minio_endpoint }}/minio/health/live"
