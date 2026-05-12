@@ -52,12 +52,36 @@
 - name: Flush handlers to ensure plugins and configs are applied
   ansible.builtin.meta: flush_handlers
 
-- name: Wait for Elasticsearch API to be ready
-  ansible.builtin.wait_for:
-    host: "{{ ansible_host }}"
-    port: "{{ elasticsearch_http_port }}"
-    delay: 10
-    timeout: 600
+- name: Wait for Elasticsearch API to become ready
+  block:
+    - name: Wait for port {{ elasticsearch_http_port }}
+      ansible.builtin.wait_for:
+        host: "{{ ansible_host }}"
+        port: "{{ elasticsearch_http_port }}"
+        delay: 5
+        timeout: 300
+  rescue:
+    - name: Check Elasticsearch service status
+      ansible.builtin.command: systemctl status {{ elasticsearch_service }}
+      register: service_status
+      ignore_errors: true
+
+    - name: Display service status
+      ansible.builtin.debug:
+        var: service_status.stdout_lines
+
+    - name: Capture last 100 lines of Elasticsearch logs
+      ansible.builtin.command: tail -n 100 {{ elasticsearch_log_path }}/{{ elasticsearch_cluster_name }}.log
+      register: es_logs
+      ignore_errors: true
+
+    - name: Display Elasticsearch logs
+      ansible.builtin.debug:
+        var: es_logs.stdout_lines
+
+    - name: Fail with detailed information
+      ansible.builtin.fail:
+        msg: "Elasticsearch failed to start within the timeout. See logs above for details."
 
 - name: Integrate Minio Backup
   ansible.builtin.include_tasks: backup.yml
