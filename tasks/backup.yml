@@ -36,8 +36,8 @@
   ansible.builtin.wait_for:
     host: "{{ ansible_host }}"
     port: "{{ elasticsearch_http_port }}"
-    delay: 5
-    timeout: 300
+    delay: 10
+    timeout: 600
 
 - name: Verify Minio bucket accessibility (Diagnostic)
   ansible.builtin.shell: |
