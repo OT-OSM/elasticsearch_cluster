@@ -65,22 +65,11 @@ http.port: {{ elasticsearch_http_port }}
 #
 # --------------------------------- Discovery ----------------------------------
 #
-{% if elasticsearch_standalone | bool %}
-# Standalone mode
-discovery.type: single-node
+{% if elasticsearch_cluster_enabled | bool %}
+discovery.seed_hosts: [ {% for host in groups['es'] %}"{{ hostvars[host]['ansible_host'] | default(host) }}"{% if not loop.last %}, {% endif %}{% endfor %} ]
+cluster.initial_master_nodes: [ {% for host in groups['es'] %}"{{ hostvars[host]['ansible_host'] | default(host) }}"{% if not loop.last %}, {% endif %}{% endfor %} ]
 {% else %}
-# Cluster mode
-# Pass an initial list of hosts to perform discovery when new node is started:
-#
-discovery.seed_hosts: {{ elasticsearch_zen_host }}
-#
-# Bootstrap the cluster using an initial set of master-eligible nodes:
-#
-cluster.initial_master_nodes:
-{% set seed_hosts = groups[elasticsearch_seed_hosts_group] | default(ansible_play_batch) %}
-{% for host in seed_hosts %}
-- {{ hostvars[host]['ansible_default_ipv4']['address'] }}
-{% endfor %}
+discovery.type: single-node
 {% endif %}
 
 #
@@ -98,7 +87,7 @@ xpack.security.authc.token.enabled: false
 
 # Allow anonymous access for Load Balancer and Monitoring
 xpack.security.authc.anonymous.username: anonymous_user
-xpack.security.authc.anonymous.roles: [ "monitor", "viewer" ]
+xpack.security.authc.anonymous.roles: monitor, viewer
 xpack.security.authc.anonymous.authz_exception: true
 
 # HTTP SSL

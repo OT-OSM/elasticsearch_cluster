@@ -48,7 +48,7 @@
       index.number_of_replicas: 0
     status_code: 200
     validate_certs: false
-  when: elasticsearch_standalone | bool
+  when: elasticsearch_optimize_single_node | bool
   ignore_errors: true
 
 - name: Show final status

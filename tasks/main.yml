@@ -84,3 +84,21 @@
         cluster.routing.allocation.disk.threshold_enabled: false
     status_code: 200
     validate_certs: false
+  when: elasticsearch_optimize_single_node | bool
+  ignore_errors: true
+
+- name: Explicitly enable X-Pack Monitoring collection (Required for Metrics)
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_cluster/settings"
+    method: PUT
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      persistent:
+        xpack.monitoring.collection.enabled: true
+    status_code: 200
+    validate_certs: false
+  when: elasticsearch_metrics_enabled | bool
+  ignore_errors: true
