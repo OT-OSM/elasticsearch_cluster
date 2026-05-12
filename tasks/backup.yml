@@ -77,16 +77,16 @@
     timeout: 120
     body_format: json
     body:
-      schedule: "0 0 0 * * ?"  # Every day at midnight
+      schedule: "{{ elasticsearch_backup_schedule }}"
       name: "<{{ elasticsearch_slm_policy_name }}-{now/d}>"
       repository: "{{ elasticsearch_snapshot_repo_name }}"
       config:
         indices: "*"
         include_global_state: true
       retention:
-        expire_after: "30d"
-        min_count: 5
-        max_count: 50
+        expire_after: "{{ elasticsearch_backup_retention_days }}"
+        min_count: {{ elasticsearch_backup_min_count }}
+        max_count: {{ elasticsearch_backup_max_count }}
     status_code: 200
     validate_certs: false
   run_once: true
