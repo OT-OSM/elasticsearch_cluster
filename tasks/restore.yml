@@ -51,23 +51,6 @@
   when: elasticsearch_standalone | bool
   ignore_errors: true
 
-- name: Wait for cluster health to return to yellow or green (Robust)
-  ansible.builtin.uri:
-    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_cluster/health?wait_for_status=yellow&timeout=30s"
-    method: GET
-    user: "{{ elasticsearch_user }}"
-    password: "{{ elasticsearch_password }}"
-    force_basic_auth: true
-    validate_certs: false
-  register: health_check
-  until: 
-    - health_check.json is defined
-    - health_check.json.status in ['green', 'yellow']
-  retries: 60
-  delay: 5
-  # Don't fail the playbook just because one request timed out while cluster is RED
-  failed_when: false
-
 - name: Show final status
   ansible.builtin.debug:
-    msg: "Restore complete. Cluster health is {{ health_check.json.status | default('unknown') }}."
+    msg: "Restore triggered and optimized. Shards are initializing in the background."
