@@ -77,6 +77,7 @@ elasticsearch_nproc_limit: "5000"
 elasticsearch_swapness: "1"
 elasticsearch_vm_max_count: "262144"
 elasticsearch_m_lock: false
+elasticsearch_metrics_enabled: true
 
 # ------------------------------------------------------------------------------
 # Backup & Snapshot Configuration (Minio/S3)
