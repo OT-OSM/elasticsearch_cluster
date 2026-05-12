@@ -35,6 +35,9 @@
     status_code: 200
     validate_certs: false
   register: restore_result
+  until: restore_result.status == 200
+  retries: 10
+  delay: 10
 
 - name: Optimize all indices (Set Replicas to 0 for Single-Node speed)
   ansible.builtin.uri:
