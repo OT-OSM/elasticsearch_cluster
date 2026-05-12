@@ -47,6 +47,29 @@ path.data: {{ elasticsearch_data_path }}
 #
 path.logs: {{ elasticsearch_log_path }}
 #
+{% if elasticsearch_oidc_enable | bool %}
+# ------------------------------------------------------------------------------
+# OIDC / Keycloak SSO Configuration
+# ------------------------------------------------------------------------------
+xpack.security.authc.realms:
+  native.native1:
+    order: 0
+  file.file1:
+    order: 1
+{% for realm in elasticsearch_oidc_realms %}
+  oidc.{{ realm.name }}:
+    order: {{ realm.order }}
+    rp.client_id: "{{ realm.rp_client_id }}"
+    rp.response_type: "{{ realm.rp_response_type }}"
+    rp.redirect_uri: "{{ realm.rp_redirect_uri }}"
+    op.issuer: "{{ realm.op_issuer }}"
+    op.jwkset_path: "{{ realm.op_issuer }}/protocol/openid-connect/certs"
+    op.authorization_endpoint: "{{ realm.op_issuer }}/protocol/openid-connect/auth"
+    op.token_endpoint: "{{ realm.op_issuer }}/protocol/openid-connect/token"
+    op.userinfo_endpoint: "{{ realm.op_issuer }}/protocol/openid-connect/userinfo"
+    claims.principal: {{ realm.claims_principal }}
+{% endfor %}
+{% endif %}
 # ----------------------------------- Memory -----------------------------------
 #
 # Lock the memory on startup:
@@ -94,13 +117,7 @@ action.destructive_requires_name: true
 #
 xpack.security.enabled: {{ elasticsearch_security_enabled | lower }}
 xpack.security.enrollment.enabled: {{ elasticsearch_enrollment_enabled | lower }}
-xpack.security.authc.token.enabled: false
-
-# Allow anonymous access for Load Balancer health checks
-xpack.security.authc.anonymous:
-  username: anonymous_user
-  roles: [ "monitor" ]
-  authz_exception: true
+xpack.security.authc.token.enabled: {{ elasticsearch_oidc_enable | lower }}
 
 # HTTP SSL
 xpack.security.http.ssl.enabled: {{ elasticsearch_http_ssl_enabled | lower }}

@@ -14,20 +14,12 @@
     limit_item: "{{ item.item }}"
     value: "{{ item.value }}"
   loop:
-    - {
-        type: "soft",
-        item: "nofile",
-        value: "{{ elasticsearch_nofile_limit }}",
-      }
-    - {
-        type: "hard",
-        item: "nofile",
-        value: "{{ elasticsearch_nofile_limit }}",
-      }
-    - { type: "soft", item: "nproc", value: "{{ elasticsearch_nproc_limit }}" }
-    - { type: "hard", item: "nproc", value: "{{ elasticsearch_nproc_limit }}" }
-    - { type: "soft", item: "memlock", value: "unlimited" }
-    - { type: "hard", item: "memlock", value: "unlimited" }
+    - { type: 'soft', item: 'nofile', value: "{{ elasticsearch_nofile_limit }}" }
+    - { type: 'hard', item: 'nofile', value: "{{ elasticsearch_nofile_limit }}" }
+    - { type: 'soft', item: 'nproc', value: "{{ elasticsearch_nproc_limit }}" }
+    - { type: 'hard', item: 'nproc', value: "{{ elasticsearch_nproc_limit }}" }
+    - { type: 'soft', item: 'memlock', value: 'unlimited' }
+    - { type: 'hard', item: 'memlock', value: 'unlimited' }
 
 - name: Include configuration tasks
   ansible.builtin.include_tasks: config.yml
@@ -46,9 +38,16 @@
     enabled: true
     daemon_reload: true
 
+- name: Configure security API settings
+  ansible.builtin.include_tasks: users.yml
+
 - name: Integrate Minio Backup
   ansible.builtin.include_tasks: backup.yml
   when: elasticsearch_backup_enabled | bool
+
+- name: Setup OpenSearch Dashboards
+  ansible.builtin.include_tasks: dashboard.yml
+  when: elasticsearch_dashboard_enabled | bool
 
 - name: Restore Data from Minio
   ansible.builtin.include_tasks: restore.yml

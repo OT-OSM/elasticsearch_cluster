@@ -1,0 +1,26 @@
+---
+- name: Wait for Elasticsearch to be ready for API calls
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host }}"
+    port: "{{ elasticsearch_http_port }}"
+    delay: 10
+    timeout: 300
+
+- name: Configure OIDC Role Mapping for Keycloak
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_security/role_mapping/oidc_{{ item.name }}_mapping"
+    method: POST
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      enabled: true
+      roles: ["superuser"]
+      rules:
+        all:
+          - field: { realm.name: "{{ item.name }}" }
+    status_code: [200, 201]
+    validate_certs: false
+  with_items: "{{ elasticsearch_oidc_realms }}"
+  when: elasticsearch_oidc_enable | bool

@@ -41,6 +41,7 @@
   ansible.builtin.shell: |
     curl -I -k "{{ elasticsearch_minio_protocol }}://{{ elasticsearch_minio_endpoint }}/minio/health/live"
   register: bucket_check
+  ignore_errors: true
 
 - name: Debug Minio Bucket Check
   ansible.builtin.debug:
@@ -54,7 +55,6 @@
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
     force_basic_auth: true
-    timeout: 120
     body_format: json
     body:
       type: "s3"
@@ -74,19 +74,18 @@
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
     force_basic_auth: true
-    timeout: 120
     body_format: json
     body:
-      schedule: "{{ elasticsearch_backup_schedule }}"
+      schedule: "0 0 0 * * ?"  # Every day at midnight
       name: "<{{ elasticsearch_slm_policy_name }}-{now/d}>"
       repository: "{{ elasticsearch_snapshot_repo_name }}"
       config:
         indices: "*"
         include_global_state: true
       retention:
-        expire_after: "{{ elasticsearch_backup_retention_days }}"
-        min_count: "{{ elasticsearch_backup_min_count }}"
-        max_count: "{{ elasticsearch_backup_max_count }}"
+        expire_after: "30d"
+        min_count: 5
+        max_count: 50
     status_code: 200
     validate_certs: false
   run_once: true
