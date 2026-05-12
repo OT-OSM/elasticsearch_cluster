@@ -6,6 +6,15 @@
     delay: 10
     timeout: 300
 
+- name: Activate 30-Day Platinum Trial (Required for OIDC/SSO)
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_license/start_trial?acknowledge=true"
+    method: POST
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    status_code: [200, 403] # 403 if trial was already used or expired
+
 - name: Configure OIDC Role Mapping for Keycloak
   ansible.builtin.uri:
     url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_security/role_mapping/oidc_{{ item.name }}_mapping"
@@ -37,9 +46,8 @@
       realm: "{{ elasticsearch_oidc_realms[0].name }}"
     status_code: 200
   register: oidc_check
-  ignore_errors: yes
 
 - name: Display SSO Redirect URL (Verification)
   ansible.builtin.debug:
-    msg: "SSO is ACTIVE. Keycloak Redirect URL: {{ oidc_check.json.redirect if oidc_check.json is defined else 'Configuration Error' }}"
+    msg: "SSO is ACTIVE. Keycloak Redirect URL: {{ oidc_check.json.redirect | default('Configuration/License Error') }}"
   when: oidc_check.json is defined

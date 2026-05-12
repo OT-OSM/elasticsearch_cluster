@@ -41,7 +41,6 @@
   ansible.builtin.shell: |
     curl -I -k "{{ elasticsearch_minio_protocol }}://{{ elasticsearch_minio_endpoint }}/minio/health/live"
   register: bucket_check
-  ignore_errors: true
 
 - name: Debug Minio Bucket Check
   ansible.builtin.debug:
