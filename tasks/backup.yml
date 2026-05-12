@@ -85,8 +85,8 @@
         include_global_state: true
       retention:
         expire_after: "{{ elasticsearch_backup_retention_days }}"
-        min_count: {{ elasticsearch_backup_min_count }}
-        max_count: {{ elasticsearch_backup_max_count }}
+        min_count: "{{ elasticsearch_backup_min_count }}"
+        max_count: "{{ elasticsearch_backup_max_count }}"
     status_code: 200
     validate_certs: false
   run_once: true
