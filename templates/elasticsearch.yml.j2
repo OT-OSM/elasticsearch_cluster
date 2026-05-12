@@ -128,3 +128,10 @@ s3.client.default.path_style_access: {{ elasticsearch_minio_path_style_access | 
 {% if elasticsearch_minio_signer_override | default('') != '' %}
 s3.client.default.signer_override: "{{ elasticsearch_minio_signer_override }}"
 {% endif %}
+
+# ------------------------------------------------------------------------------
+# Monitoring & Metrics (Prometheus)
+# ------------------------------------------------------------------------------
+xpack.monitoring.collection.enabled: true
+# Built-in Prometheus exporter is available at /_prometheus/metrics
+

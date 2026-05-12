@@ -91,6 +91,12 @@ ansible-playbook -i inventory.ini deploy.yml
 curl -k -u username:password https://localhost:9200/_cluster/health?pretty
 ```
 
+**Accessing Prometheus Metrics:**
+The built-in Prometheus exporter is available at:
+```bash
+curl -k -u username:password http://localhost:9200/_prometheus/metrics
+```
+
 ## Disaster Recovery (Restore)
 
 To restore data from Minio, explicitly enable the restore task:
