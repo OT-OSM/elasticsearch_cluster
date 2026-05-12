@@ -70,3 +70,17 @@
     port: "{{ elasticsearch_http_port }}"
     delay: 10
     timeout: 300
+
+- name: Force shard allocation (Bypass Disk Watermarks for Lab speed)
+  ansible.builtin.uri:
+    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_cluster/settings"
+    method: PUT
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      persistent:
+        cluster.routing.allocation.disk.threshold_enabled: false
+    status_code: 200
+    validate_certs: false
