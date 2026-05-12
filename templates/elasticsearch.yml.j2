@@ -66,8 +66,8 @@ http.port: {{ elasticsearch_http_port }}
 # --------------------------------- Discovery ----------------------------------
 #
 {% if elasticsearch_cluster_enabled | bool %}
-discovery.seed_hosts: [ {% for host in groups['es'] %}"{{ hostvars[host]['ansible_host'] | default(host) }}"{% if not loop.last %}, {% endif %}{% endfor %} ]
-cluster.initial_master_nodes: [ {% for host in groups['es'] %}"{{ hostvars[host]['ansible_host'] | default(host) }}"{% if not loop.last %}, {% endif %}{% endfor %} ]
+discovery.seed_hosts: [ {% for host in groups[elasticsearch_seed_hosts_group] %}"{{ hostvars[host]['ansible_host'] | default(host) }}"{% if not loop.last %}, {% endif %}{% endfor %} ]
+cluster.initial_master_nodes: [ {% for host in groups[elasticsearch_seed_hosts_group] %}"{{ hostvars[host]['ansible_host'] | default(host) }}"{% if not loop.last %}, {% endif %}{% endfor %} ]
 {% else %}
 discovery.type: single-node
 {% endif %}

@@ -7,6 +7,9 @@
 - name: Include OS Specific setup tasks
   ansible.builtin.include_tasks: "es-{{ ansible_os_family }}.yml"
 
+- name: Install Elasticsearch plugins
+  ansible.builtin.include_tasks: plugins.yml
+
 - name: Set system limits for {{ elasticsearch_name }}
   community.general.pam_limits:
     domain: "{{ elasticsearch_name }}"
@@ -46,6 +49,9 @@
     enabled: true
     daemon_reload: true
 
+- name: Flush handlers to ensure plugins and configs are applied
+  ansible.builtin.meta: flush_handlers
+
 - name: Wait for Elasticsearch API to be ready
   ansible.builtin.wait_for:
     host: "{{ ansible_host }}"
@@ -61,19 +67,10 @@
   ansible.builtin.include_tasks: restore.yml
   when: elasticsearch_restore_enable | bool
 
-- name: Flush handlers to ensure all restarts are complete
-  ansible.builtin.meta: flush_handlers
-
-- name: Final verification of Elasticsearch availability
-  ansible.builtin.wait_for:
-    host: "{{ ansible_host }}"
-    port: "{{ elasticsearch_http_port }}"
-    delay: 10
-    timeout: 300
 
 - name: Force shard allocation (Bypass Disk Watermarks for Lab speed)
   ansible.builtin.uri:
-    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_cluster/settings"
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_cluster/settings"
     method: PUT
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
@@ -89,7 +86,7 @@
 
 - name: Explicitly enable X-Pack Monitoring collection (Required for Metrics)
   ansible.builtin.uri:
-    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_cluster/settings"
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_cluster/settings"
     method: PUT
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"

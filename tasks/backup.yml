@@ -1,44 +1,4 @@
 ---
-- name: Check if repository-s3 plugin is installed
-  ansible.builtin.command:
-    cmd: "{{ elasticsearch_home }}/bin/elasticsearch-plugin list"
-  register: installed_plugins
-  changed_when: false
-
-- name: Install repository-s3 plugin
-  ansible.builtin.command:
-    cmd: "{{ elasticsearch_home }}/bin/elasticsearch-plugin install {{ elasticsearch_s3_plugin_name }} --batch"
-  when: elasticsearch_s3_plugin_name not in installed_plugins.stdout
-  notify: Restart elasticsearch
-
-- name: Check if Minio credentials are in keystore
-  ansible.builtin.command:
-    cmd: "{{ elasticsearch_home }}/bin/elasticsearch-keystore list"
-  register: keystore_list
-  changed_when: false
-
-- name: Add Minio access key to keystore
-  ansible.builtin.shell:
-    cmd: 'su -s /bin/bash {{ elasticsearch_name }} -c "echo {{ elasticsearch_minio_access_key }} | {{ elasticsearch_home }}/bin/elasticsearch-keystore add --stdin --force s3.client.default.access_key"'
-  when: "'s3.client.default.access_key' not in keystore_list.stdout"
-  notify: Restart elasticsearch
-
-- name: Add Minio secret key to keystore
-  ansible.builtin.shell:
-    cmd: 'su -s /bin/bash {{ elasticsearch_name }} -c "echo {{ elasticsearch_minio_secret_key }} | {{ elasticsearch_home }}/bin/elasticsearch-keystore add --stdin --force s3.client.default.secret_key"'
-  when: "'s3.client.default.secret_key' not in keystore_list.stdout"
-  notify: Restart elasticsearch
-
-- name: Flush handlers to ensure Elasticsearch is restarted before repo registration
-  ansible.builtin.meta: flush_handlers
-
-- name: Wait for Elasticsearch API to be ready after restart
-  ansible.builtin.wait_for:
-    host: "{{ ansible_host }}"
-    port: "{{ elasticsearch_http_port }}"
-    delay: 10
-    timeout: 600
-
 - name: Verify Minio bucket accessibility (Diagnostic)
   ansible.builtin.shell: |
     curl -I -k "{{ elasticsearch_minio_protocol }}://{{ elasticsearch_minio_endpoint }}/minio/health/live"
@@ -52,7 +12,7 @@
 
 - name: Register Minio snapshot repository
   ansible.builtin.uri:
-    url: "http://{{ ansible_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}"
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}"
     method: PUT
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
