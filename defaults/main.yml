@@ -83,8 +83,15 @@ elasticsearch_m_lock: false
 # ------------------------------------------------------------------------------
 elasticsearch_backup_enabled: true
 elasticsearch_s3_plugin_name: "repository-s3"
-elasticsearch_snapshot_repo_name: "minio_backup"
 elasticsearch_slm_policy_name: "daily-snapshots"
+elasticsearch_snapshot_repo_name: "minio_backup"
+
+# RPO: Recovery Point Objective (Backup Frequency)
+elasticsearch_backup_schedule: "0 0 0 * * ?"  # Daily at midnight
+# Retention: Data History Requirements
+elasticsearch_backup_retention_days: "30d"
+elasticsearch_backup_min_count: 5
+elasticsearch_backup_max_count: 50
 
 # Minio Connection Details (Override these in group_vars)
 elasticsearch_minio_host: "minio.example.com"

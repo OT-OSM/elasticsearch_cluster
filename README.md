@@ -64,6 +64,9 @@ Variables are defined in `defaults/main.yml`. Prefix all overrides with `elastic
 | `elasticsearch_minio_endpoint` | `""` | The S3 API endpoint for Minio. |
 | `elasticsearch_slm_policy_name` | `"daily-snapshots"` | Name of the SLM policy. |
 | `elasticsearch_snapshot_repo_name` | `"minio_backup"` | Snapshot repository name. |
+| `elasticsearch_backup_schedule` | `"0 0 0 * * ?"` | **RPO**: Snapshot frequency (Cron expression). |
+| `elasticsearch_backup_retention_days` | `"30d"` | **RPO**: How long to keep snapshots. |
+| `elasticsearch_backup_max_count` | `50` | **RPO**: Maximum number of snapshots to keep. |
 
 ## Usage
 
@@ -94,6 +97,21 @@ To restore data from Minio, explicitly enable the restore task:
 ```bash
 ansible-playbook -i inventory.ini deploy.yml -e "elasticsearch_restore_enable=true"
 ```
+
+## RTO & RPO Configuration
+
+The role is designed to meet business-defined **Recovery Point Objectives (RPO)** and **Recovery Time Objectives (RTO)**:
+
+### 1. RPO (Recovery Point Objective)
+Control data loss by adjusting backup frequency and retention in `group_vars/all.yml`:
+- **Backup Frequency**: Change `elasticsearch_backup_schedule` (e.g., to `0 0 * * * ?` for 1-hour RPO).
+- **Retention Policy**: Adjust `elasticsearch_backup_retention_days` and `elasticsearch_backup_max_count` to meet compliance requirements.
+
+### 2. RTO (Recovery Time Objective)
+Minimize downtime during a disaster:
+- **Automation**: Use the built-in `restore.yml` tasks to automate the recovery process.
+- **Selective Restore**: Use `elasticsearch_restore_indices` to prioritize critical data first.
+- **Prefixing**: Restored indices are prefixed with `restored-` (configurable via `elasticsearch_restore_prefix`) to allow verification before cutting over.
 
 ## Author
 Modernized for Elasticsearch 9.x production standards by Antigravity.
