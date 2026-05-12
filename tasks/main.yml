@@ -60,3 +60,13 @@
 - name: Restore Data from Minio
   ansible.builtin.include_tasks: restore.yml
   when: elasticsearch_restore_enable | bool
+
+- name: Flush handlers to ensure all restarts are complete
+  ansible.builtin.meta: flush_handlers
+
+- name: Final verification of Elasticsearch availability
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host }}"
+    port: "{{ elasticsearch_http_port }}"
+    delay: 10
+    timeout: 300
