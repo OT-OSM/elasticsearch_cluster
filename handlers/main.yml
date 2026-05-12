@@ -6,7 +6,6 @@
     pkill -9 -u {{ elasticsearch_name }} || true
     systemctl start {{ elasticsearch_service }}
 
-
 # Reload systemd after modification
 - name: Reload systemd
   ansible.builtin.systemd:
