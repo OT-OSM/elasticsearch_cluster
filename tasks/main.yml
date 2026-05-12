@@ -46,6 +46,13 @@
     enabled: true
     daemon_reload: true
 
+- name: Wait for Elasticsearch API to be ready
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host }}"
+    port: "{{ elasticsearch_http_port }}"
+    delay: 20
+    timeout: 300
+
 - name: Integrate Minio Backup
   ansible.builtin.include_tasks: backup.yml
   when: elasticsearch_backup_enabled | bool

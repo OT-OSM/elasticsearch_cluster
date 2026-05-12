@@ -32,28 +32,6 @@
 - name: Flush handlers to ensure Elasticsearch is restarted before repo registration
   ansible.builtin.meta: flush_handlers
 
-- name: Wait for Elasticsearch to be ready on port {{ elasticsearch_http_port }}
-  block:
-    - ansible.builtin.wait_for:
-        host: "{{ ansible_host }}"
-        port: "{{ elasticsearch_http_port }}"
-        delay: 20
-        timeout: 300 # Reduced for faster debugging
-  rescue:
-    - name: Capture Elasticsearch Logs on Failure
-      ansible.builtin.shell: "tail -n 100 {{ elasticsearch_log_path }}/{{ elasticsearch_cluster_name }}.log"
-      register: es_error_logs
-      ignore_errors: true
-
-    - name: Display Elasticsearch Error Logs
-      ansible.builtin.debug:
-        var: es_error_logs.stdout_lines
-
-    - name: Fail with detailed message
-      ansible.builtin.fail:
-        msg: "Elasticsearch failed to start after plugin installation. Check the logs above."
-
-
 - name: Verify Minio bucket accessibility (Diagnostic)
   ansible.builtin.shell: |
     curl -I -k "{{ elasticsearch_minio_protocol }}://{{ elasticsearch_minio_endpoint }}/minio/health/live"
