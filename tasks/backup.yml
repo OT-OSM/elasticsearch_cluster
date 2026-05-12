@@ -55,6 +55,7 @@
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
     force_basic_auth: true
+    timeout: 120
     body_format: json
     body:
       type: "s3"
@@ -74,6 +75,7 @@
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
     force_basic_auth: true
+    timeout: 120
     body_format: json
     body:
       schedule: "0 0 0 * * ?"  # Every day at midnight
