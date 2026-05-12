@@ -50,8 +50,8 @@
   ansible.builtin.wait_for:
     host: "{{ ansible_host }}"
     port: "{{ elasticsearch_http_port }}"
-    delay: 5
-    timeout: 300
+    delay: 10
+    timeout: 600
 
 - name: Integrate Minio Backup
   ansible.builtin.include_tasks: backup.yml
