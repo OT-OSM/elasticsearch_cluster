@@ -133,6 +133,5 @@ s3.client.default.signer_override: "{{ elasticsearch_minio_signer_override }}"
 # Monitoring & Metrics (Prometheus)
 # ------------------------------------------------------------------------------
 xpack.monitoring.collection.enabled: {{ elasticsearch_metrics_enabled | lower }}
-prometheus.exporter.enabled: {{ elasticsearch_metrics_enabled | lower }}
 # Built-in Prometheus exporter is available at /_prometheus/metrics
 
