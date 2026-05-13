@@ -15,3 +15,13 @@
   until: plugin_install is success
   retries: 3
   delay: 5
+
+- name: Install prometheus-exporter plugin
+  ansible.builtin.command:
+    cmd: "{{ elasticsearch_home }}/bin/elasticsearch-plugin install {{ elasticsearch_prometheus_plugin_name }} --batch"
+  when: elasticsearch_prometheus_plugin_name not in installed_plugins.stdout
+  notify: Restart elasticsearch
+  register: prometheus_plugin_install
+  until: prometheus_plugin_install is success
+  retries: 3
+  delay: 5

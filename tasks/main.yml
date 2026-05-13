@@ -82,6 +82,36 @@
     - name: Fail with detailed information
       ansible.builtin.fail:
         msg: "Elasticsearch failed to start within the timeout. See logs above for details."
+
+- name: Post-startup health stabilization
+  block:
+    - name: Set number_of_replicas to 0 for all indices (Single Node Mode)
+      ansible.builtin.uri:
+        url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_all/_settings"
+        method: PUT
+        user: "{{ elasticsearch_user }}"
+        password: "{{ elasticsearch_password }}"
+        force_basic_auth: true
+        body_format: json
+        body:
+          index:
+            number_of_replicas: 0
+        status_code: 200
+        validate_certs: false
+      ignore_errors: true
+
+    - name: Force retry failed shard allocations
+      ansible.builtin.uri:
+        url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_cluster/reroute?retry_failed=true"
+        method: POST
+        user: "{{ elasticsearch_user }}"
+        password: "{{ elasticsearch_password }}"
+        force_basic_auth: true
+        status_code: 200
+        validate_certs: false
+      ignore_errors: true
+  when: not elasticsearch_standalone | bool or elasticsearch_optimize_single_node | bool
+
 - name: Configure security API settings (Users, Trials, SSO)
   ansible.builtin.include_tasks: security_api.yml
 
