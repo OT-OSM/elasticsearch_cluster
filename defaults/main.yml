@@ -84,7 +84,6 @@ elasticsearch_metrics_enabled: true
 # ------------------------------------------------------------------------------
 elasticsearch_backup_enabled: true
 elasticsearch_s3_plugin_name: "repository-s3"
-elasticsearch_prometheus_plugin_name: "prometheus-exporter"
 elasticsearch_slm_policy_name: "daily-snapshots"
 elasticsearch_snapshot_repo_name: "minio_backup"
 
