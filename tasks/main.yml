@@ -82,6 +82,8 @@
     - name: Fail with detailed information
       ansible.builtin.fail:
         msg: "Elasticsearch failed to start within the timeout. See logs above for details."
+- name: Configure security API settings (Users, Trials, SSO)
+  ansible.builtin.include_tasks: security_api.yml
 
 - name: Integrate Minio Backup
   ansible.builtin.include_tasks: backup.yml
