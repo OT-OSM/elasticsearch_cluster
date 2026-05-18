@@ -5,8 +5,8 @@
   ansible.builtin.file:
     path: "{{ elasticsearch_exporter_bin_dir }}"
     state: directory
-    owner: "{{ elasticsearch_user }}"
-    group: "{{ elasticsearch_user }}"
+    owner: root
+    group: root
     mode: '0755'
 
 - name: Download and extract Elasticsearch Exporter
@@ -16,8 +16,8 @@
     remote_src: true
     extra_opts: [--strip-components=1]
     creates: "{{ elasticsearch_exporter_bin_dir }}/elasticsearch_exporter"
-    owner: "{{ elasticsearch_user }}"
-    group: "{{ elasticsearch_user }}"
+    owner: root
+    group: root
 
 - name: Create Systemd service file for Elasticsearch Exporter
   ansible.builtin.copy:
@@ -33,8 +33,8 @@
 
       [Service]
       Type=simple
-      User={{ elasticsearch_user }}
-      Group={{ elasticsearch_user }}
+      User=root
+      Group=root
       ExecStart={{ elasticsearch_exporter_bin_dir }}/elasticsearch_exporter \
           --es.uri={{ elasticsearch_api_protocol }}://{{ elasticsearch_monitoring_user }}:{{ elasticsearch_monitoring_password }}@{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }} \
           --es.all \
@@ -56,3 +56,4 @@
     state: started
     enabled: true
     daemon_reload: true
+
