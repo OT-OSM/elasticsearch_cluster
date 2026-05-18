@@ -1,0 +1,58 @@
+---
+# Setup Prometheus Elasticsearch Exporter as a Systemd Service
+
+- name: Ensure exporter directory exists
+  ansible.builtin.file:
+    path: "{{ elasticsearch_exporter_bin_dir }}"
+    state: directory
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_user }}"
+    mode: '0755'
+
+- name: Download and extract Elasticsearch Exporter
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus-community/elasticsearch_exporter/releases/download/v{{ elasticsearch_exporter_version }}/elasticsearch_exporter-{{ elasticsearch_exporter_version }}.linux-amd64.tar.gz"
+    dest: "{{ elasticsearch_exporter_bin_dir }}"
+    remote_src: true
+    extra_opts: [--strip-components=1]
+    creates: "{{ elasticsearch_exporter_bin_dir }}/elasticsearch_exporter"
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_user }}"
+
+- name: Create Systemd service file for Elasticsearch Exporter
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/elasticsearch_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      [Unit]
+      Description=Prometheus Elasticsearch Exporter
+      After=elasticsearch.service
+      Requires=elasticsearch.service
+
+      [Service]
+      Type=simple
+      User={{ elasticsearch_user }}
+      Group={{ elasticsearch_user }}
+      ExecStart={{ elasticsearch_exporter_bin_dir }}/elasticsearch_exporter \
+          --es.uri={{ elasticsearch_api_protocol }}://{{ elasticsearch_monitoring_user }}:{{ elasticsearch_monitoring_password }}@{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }} \
+          --es.all \
+          --es.indices \
+          --es.cluster_settings \
+          --es.shards \
+          --es.snapshots \
+          --web.listen-address=:9114
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=multi-user.target
+  notify: Restart elasticsearch_exporter
+
+- name: Ensure Elasticsearch Exporter is enabled and started
+  ansible.builtin.systemd:
+    name: elasticsearch_exporter
+    state: started
+    enabled: true
+    daemon_reload: true

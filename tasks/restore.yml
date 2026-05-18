@@ -29,7 +29,7 @@
     force_basic_auth: true
     body_format: json
     body:
-      indices: "{{ elasticsearch_restore_indices if elasticsearch_restore_indices != '*' else '*,-.*' }}"
+      indices: "{{ elasticsearch_restore_indices if elasticsearch_restore_indices != '*' else '*,-.*,-' ~ elasticsearch_restore_prefix ~ '*' }}"
       include_global_state: false
       rename_pattern: "(.+)"
       rename_replacement: "{{ elasticsearch_restore_prefix }}{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}-$1"

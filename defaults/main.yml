@@ -111,3 +111,9 @@ elasticsearch_restore_enable: false
 elasticsearch_snapshot_name: ""  # If empty, the role can be programmed to find the latest
 elasticsearch_restore_indices: "*"
 elasticsearch_restore_prefix: "restored-"
+
+# ------------------------------------------------------------------------------
+# Prometheus Exporter Settings
+# ------------------------------------------------------------------------------
+elasticsearch_exporter_version: "1.7.0"
+elasticsearch_exporter_bin_dir: "/opt/elasticsearch_exporter"
