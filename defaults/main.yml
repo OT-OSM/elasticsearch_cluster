@@ -9,7 +9,6 @@
 elasticsearch_version: "9.3.4"
 elasticsearch_name: "elasticsearch"
 elasticsearch_home: "/usr/share/elasticsearch"
-elasticsearch_service: "elasticsearch.service"
 elasticsearch_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
 
 # ------------------------------------------------------------------------------

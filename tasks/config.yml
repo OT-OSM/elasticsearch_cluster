@@ -1,4 +1,26 @@
 ---
+- name: Set system limits for {{ elasticsearch_name }}
+  community.general.pam_limits:
+    domain: "{{ elasticsearch_name }}"
+    limit_type: "{{ item.type }}"
+    limit_item: "{{ item.item }}"
+    value: "{{ item.value }}"
+  loop:
+    - {
+        type: "soft",
+        item: "nofile",
+        value: "{{ elasticsearch_nofile_limit }}",
+      }
+    - {
+        type: "hard",
+        item: "nofile",
+        value: "{{ elasticsearch_nofile_limit }}",
+      }
+    - { type: "soft", item: "nproc", value: "{{ elasticsearch_nproc_limit }}" }
+    - { type: "hard", item: "nproc", value: "{{ elasticsearch_nproc_limit }}" }
+    - { type: "soft", item: "memlock", value: "unlimited" }
+    - { type: "hard", item: "memlock", value: "unlimited" }
+
 # Update environment for elasticsearch
 - name: Configure {{ elasticsearch_name }} service and environment
   ansible.builtin.template:
@@ -7,7 +29,7 @@
     mode: "0660"
   with_items:
     - {name: "limit.conf.j2", path: "/etc/security/limits.d/{{ elasticsearch_name }}.conf"}
-    - {name: "{{ elasticsearch_service }}.j2", path: "{{ elasticsearch_systemd_path }}/{{ elasticsearch_service }}"}
+    - {name: "elasticsearch.service.j2", path: "{{ elasticsearch_systemd_path }}/elasticsearch.service"}
   notify:
     - Reload systemd
     - Restart elasticsearch

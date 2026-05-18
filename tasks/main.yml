@@ -1,50 +1,40 @@
 ---
-# Tasks file for elasticsearch
+# ==============================================================================
+# Elasticsearch Main Tasks
+# ==============================================================================
 
+# ------------------------------------------------------------------------------
+# Phase 1: OS Prerequisites & System Setup
+# ------------------------------------------------------------------------------
 - name: Configuring common configuration
   ansible.builtin.include_tasks: common.yml
 
 - name: Include OS Specific setup tasks
   ansible.builtin.include_tasks: "es-{{ ansible_os_family }}.yml"
 
-- name: Install Elasticsearch plugins
-  ansible.builtin.include_tasks: plugins.yml
-
-- name: Set system limits for {{ elasticsearch_name }}
-  community.general.pam_limits:
-    domain: "{{ elasticsearch_name }}"
-    limit_type: "{{ item.type }}"
-    limit_item: "{{ item.item }}"
-    value: "{{ item.value }}"
-  loop:
-    - {
-        type: "soft",
-        item: "nofile",
-        value: "{{ elasticsearch_nofile_limit }}",
-      }
-    - {
-        type: "hard",
-        item: "nofile",
-        value: "{{ elasticsearch_nofile_limit }}",
-      }
-    - { type: "soft", item: "nproc", value: "{{ elasticsearch_nproc_limit }}" }
-    - { type: "hard", item: "nproc", value: "{{ elasticsearch_nproc_limit }}" }
-    - { type: "soft", item: "memlock", value: "unlimited" }
-    - { type: "hard", item: "memlock", value: "unlimited" }
-
+# ------------------------------------------------------------------------------
+# Phase 2: Configuration & Security Bootstrapping
+# ------------------------------------------------------------------------------
 - name: Include configuration tasks
   ansible.builtin.include_tasks: config.yml
 
 - name: Initialize security keystore and users
   ansible.builtin.include_tasks: keystore.yml
 
+- name: Setup MinIO components (Plugins & Keystore)
+  ansible.builtin.include_tasks: minio.yml
+  when: elasticsearch_backup_enabled | bool
+
 - name: Manage TLS certificates
   ansible.builtin.include_tasks: tls-encryption.yml
   when: elasticsearch_tls_enable | bool
 
+# ------------------------------------------------------------------------------
+# Phase 3: Service Startup & Verification
+# ------------------------------------------------------------------------------
 - name: Ensure {{ elasticsearch_name }} is started
   ansible.builtin.systemd:
-    name: "{{ elasticsearch_service }}"
+    name: "elasticsearch"
     state: started
     enabled: true
     daemon_reload: true
@@ -62,7 +52,7 @@
         timeout: 300
   rescue:
     - name: Check Elasticsearch service status
-      ansible.builtin.command: systemctl status {{ elasticsearch_service }}
+      ansible.builtin.command: systemctl status elasticsearch
       register: service_status
       ignore_errors: true
 
@@ -83,11 +73,14 @@
       ansible.builtin.fail:
         msg: "Elasticsearch failed to start within the timeout. See logs above for details."
 
+# ------------------------------------------------------------------------------
+# Phase 4: API-Based Configuration & Health Stabilization
+# ------------------------------------------------------------------------------
 - name: Post-startup health stabilization
   block:
     - name: Set number_of_replicas to 0 for all indices (Single Node Mode)
       ansible.builtin.uri:
-        url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_all/_settings"
+        url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/*,-.*/_settings?allow_no_indices=true&expand_wildcards=all"
         method: PUT
         user: "{{ elasticsearch_user }}"
         password: "{{ elasticsearch_password }}"
@@ -96,9 +89,9 @@
         body:
           index:
             number_of_replicas: 0
-        status_code: 200
+        status_code: [200, 400, 404]
         validate_certs: false
-      ignore_errors: true
+      failed_when: false
 
     - name: Force retry failed shard allocations
       ansible.builtin.uri:
@@ -107,22 +100,10 @@
         user: "{{ elasticsearch_user }}"
         password: "{{ elasticsearch_password }}"
         force_basic_auth: true
-        status_code: 200
+        status_code: [200, 400]
         validate_certs: false
-      ignore_errors: true
+      failed_when: false
   when: not elasticsearch_standalone | bool or elasticsearch_optimize_single_node | bool
-
-- name: Configure security API settings (Users, Trials, SSO)
-  ansible.builtin.include_tasks: security_api.yml
-
-- name: Integrate Minio Backup
-  ansible.builtin.include_tasks: backup.yml
-  when: elasticsearch_backup_enabled | bool
-
-- name: Restore Data from Minio
-  ansible.builtin.include_tasks: restore.yml
-  when: elasticsearch_restore_enable | bool
-
 
 - name: Force shard allocation (Bypass Disk Watermarks for Lab speed)
   ansible.builtin.uri:
@@ -135,10 +116,10 @@
     body:
       persistent:
         cluster.routing.allocation.disk.threshold_enabled: false
-    status_code: 200
+    status_code: [200, 400]
     validate_certs: false
   when: elasticsearch_optimize_single_node | bool
-  ignore_errors: true
+  failed_when: false
 
 - name: Explicitly enable X-Pack Monitoring collection (Required for Metrics)
   ansible.builtin.uri:
@@ -151,7 +132,22 @@
     body:
       persistent:
         xpack.monitoring.collection.enabled: true
-    status_code: 200
+    status_code: [200, 400]
     validate_certs: false
   when: elasticsearch_metrics_enabled | bool
-  ignore_errors: true
+  failed_when: false
+
+- name: Configure security API settings (Users, Trials, SSO)
+  ansible.builtin.include_tasks: security_api.yml
+
+# ------------------------------------------------------------------------------
+# Phase 5: Backup & Restore Operations
+# ------------------------------------------------------------------------------
+- name: Integrate Minio Backup
+  ansible.builtin.include_tasks: backup.yml
+  when: elasticsearch_backup_enabled | bool
+
+- name: Restore Data from Minio
+  ansible.builtin.include_tasks: restore.yml
+  when: elasticsearch_restore_enable | bool
+

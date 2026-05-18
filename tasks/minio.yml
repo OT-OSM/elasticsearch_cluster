@@ -1,0 +1,38 @@
+---
+- name: Check if repository-s3 plugin is installed
+  ansible.builtin.command:
+    cmd: "{{ elasticsearch_home }}/bin/elasticsearch-plugin list"
+  register: installed_plugins
+  changed_when: false
+  check_mode: false
+
+- name: Install repository-s3 plugin
+  ansible.builtin.command:
+    cmd: "{{ elasticsearch_home }}/bin/elasticsearch-plugin install {{ elasticsearch_s3_plugin_name }} --batch"
+  when: elasticsearch_s3_plugin_name not in installed_plugins.stdout
+  notify: Restart elasticsearch
+  register: plugin_install
+  until: plugin_install is success
+  retries: 3
+  delay: 5
+
+- name: Check keystore entries for Minio
+  ansible.builtin.command:
+    cmd: "{{ elasticsearch_home }}/bin/elasticsearch-keystore list"
+  register: minio_keystore_list
+  changed_when: false
+  check_mode: false
+
+- name: Add Minio access key to keystore
+  ansible.builtin.shell:
+    cmd: 'su -s /bin/bash {{ elasticsearch_name }} -c "echo {{ elasticsearch_minio_access_key }} | {{ elasticsearch_home }}/bin/elasticsearch-keystore add --stdin --force s3.client.default.access_key"'
+  when: "'s3.client.default.access_key' not in minio_keystore_list.stdout"
+  no_log: true
+  notify: Restart elasticsearch
+
+- name: Add Minio secret key to keystore
+  ansible.builtin.shell:
+    cmd: 'su -s /bin/bash {{ elasticsearch_name }} -c "echo {{ elasticsearch_minio_secret_key }} | {{ elasticsearch_home }}/bin/elasticsearch-keystore add --stdin --force s3.client.default.secret_key"'
+  when: "'s3.client.default.secret_key' not in minio_keystore_list.stdout"
+  no_log: true
+  notify: Restart elasticsearch

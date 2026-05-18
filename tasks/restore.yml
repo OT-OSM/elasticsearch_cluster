@@ -43,7 +43,7 @@
 
 - name: Optimize all indices (Set Replicas to 0 for Single-Node speed)
   ansible.builtin.uri:
-    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_all/_settings"
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/*,-.*/_settings?allow_no_indices=true&expand_wildcards=all"
     method: PUT
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
@@ -51,10 +51,10 @@
     body_format: json
     body:
       index.number_of_replicas: 0
-    status_code: 200
+    status_code: [200, 400, 404]
     validate_certs: false
   when: elasticsearch_optimize_single_node | bool
-  ignore_errors: true
+  failed_when: false
   run_once: true
 
 - name: Show final status

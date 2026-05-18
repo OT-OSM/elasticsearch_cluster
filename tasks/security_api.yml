@@ -1,14 +1,4 @@
 ---
-- name: Activate 30-Day Platinum Trial (Required for OIDC & Advanced Monitoring)
-  ansible.builtin.uri:
-    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_license/start_trial?acknowledge=true"
-    method: POST
-    user: "{{ elasticsearch_user }}"
-    password: "{{ elasticsearch_password }}"
-    force_basic_auth: true
-    status_code: [200, 403]
-  register: trial_result
-  ignore_errors: true
 
 - name: Create dedicated monitoring user (Production Hardening)
   ansible.builtin.uri:
