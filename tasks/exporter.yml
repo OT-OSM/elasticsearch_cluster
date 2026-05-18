@@ -35,7 +35,7 @@
       Type=simple
       User=root
       Group=root
-      ExecStart={{ elasticsearch_exporter_bin_dir }}/elasticsearch_exporter --es.uri={{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }} --es.user={{ elasticsearch_monitoring_user }} --es.password={{ elasticsearch_monitoring_password }} --es.all --es.indices --es.cluster_settings --es.shards --es.snapshots --web.listen-address=:9114
+      ExecStart={{ elasticsearch_exporter_bin_dir }}/elasticsearch_exporter --es.uri={{ elasticsearch_api_protocol }}://{{ elasticsearch_monitoring_user }}:{{ elasticsearch_monitoring_password }}@{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }} --es.all --es.indices --es.shards --web.listen-address=:9114
       Restart=always
       RestartSec=5
 
