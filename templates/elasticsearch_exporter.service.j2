@@ -1,0 +1,20 @@
+[Unit]
+Description=Prometheus Elasticsearch Exporter
+After=elasticsearch.service
+Requires=elasticsearch.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart={{ elasticsearch_exporter_bin_dir }}/elasticsearch_exporter \
+  --es.uri={{ elasticsearch_api_protocol }}://{{ elasticsearch_monitoring_user }}:{{ elasticsearch_monitoring_password }}@{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }} \
+  --es.all \
+  --es.indices \
+  --es.shards \
+  --web.listen-address=:9114
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

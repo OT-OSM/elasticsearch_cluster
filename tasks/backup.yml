@@ -12,7 +12,7 @@
 
 - name: Register Minio snapshot repository
   ansible.builtin.uri:
-    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}"
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}?verify=false"
     method: PUT
     user: "{{ elasticsearch_user }}"
     password: "{{ elasticsearch_password }}"
@@ -29,7 +29,7 @@
     validate_certs: false
   register: repo_registration
   until: repo_registration.status in [200, 201]
-  retries: 10
+  retries: 3
   delay: 10
   run_once: true
 
@@ -54,5 +54,16 @@
         min_count: "{{ elasticsearch_backup_min_count }}"
         max_count: "{{ elasticsearch_backup_max_count }}"
     status_code: 200
+    validate_certs: false
+  run_once: true
+
+- name: Execute SLM policy immediately (Trigger Backup)
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_slm/policy/{{ elasticsearch_slm_policy_name }}/_execute"
+    method: POST
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    status_code: [200, 201]
     validate_certs: false
   run_once: true

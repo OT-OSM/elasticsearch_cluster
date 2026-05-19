@@ -1,5 +1,5 @@
 ---
-# Install libselinux-python on CentOS 7
+
 - name: Install net-tools
   ansible.builtin.yum:
     name: net-tools
