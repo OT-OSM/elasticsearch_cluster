@@ -20,27 +20,12 @@
     group: root
 
 - name: Create Systemd service file for Elasticsearch Exporter
-  ansible.builtin.copy:
+  ansible.builtin.template:
+    src: elasticsearch_exporter.service.j2
     dest: /etc/systemd/system/elasticsearch_exporter.service
     owner: root
     group: root
     mode: '0644'
-    content: |
-      [Unit]
-      Description=Prometheus Elasticsearch Exporter
-      After=elasticsearch.service
-      Requires=elasticsearch.service
-
-      [Service]
-      Type=simple
-      User=root
-      Group=root
-      ExecStart={{ elasticsearch_exporter_bin_dir }}/elasticsearch_exporter --es.uri={{ elasticsearch_api_protocol }}://{{ elasticsearch_monitoring_user }}:{{ elasticsearch_monitoring_password }}@{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }} --es.all --es.indices --es.shards --web.listen-address=:9114
-      Restart=always
-      RestartSec=5
-
-      [Install]
-      WantedBy=multi-user.target
   notify: Restart elasticsearch_exporter
 
 - name: Ensure Elasticsearch Exporter is enabled and started
