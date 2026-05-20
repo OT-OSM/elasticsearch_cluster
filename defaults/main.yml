@@ -87,7 +87,7 @@ elasticsearch_slm_policy_name: "daily-snapshots"
 elasticsearch_snapshot_repo_name: "minio_backup"
 
 # RPO: Recovery Point Objective (Backup Frequency)
-elasticsearch_backup_schedule: "0 0 0 * * ?"  # Daily at midnight
+elasticsearch_backup_schedule: "0 0 0 * * ?" # Daily at midnight
 # Retention: Data History Requirements
 elasticsearch_backup_retention_days: "30d"
 elasticsearch_backup_min_count: 5
@@ -108,7 +108,7 @@ elasticsearch_minio_path_style_access: true
 # Restore Configuration (Disabled by default for safety)
 # ------------------------------------------------------------------------------
 elasticsearch_restore_enable: false
-elasticsearch_snapshot_name: ""  # If empty, the role can be programmed to find the latest
+elasticsearch_snapshot_name: "" # If empty, the role can be programmed to find the latest
 elasticsearch_restore_indices: "*"
 elasticsearch_restore_prefix: "restored-"
 
@@ -117,3 +117,19 @@ elasticsearch_restore_prefix: "restored-"
 # ------------------------------------------------------------------------------
 elasticsearch_exporter_version: "1.7.0"
 elasticsearch_exporter_bin_dir: "/opt/elasticsearch_exporter"
+
+# ------------------------------------------------------------------------------
+# Index Lifecycle Management (ILM) Settings
+# ------------------------------------------------------------------------------
+elasticsearch_ilm_enabled: true
+elasticsearch_ilm_policy_name: "default-lifecycle-policy"
+elasticsearch_ilm_hot_max_age: "7d"
+elasticsearch_ilm_hot_max_size: "50gb"
+elasticsearch_ilm_warm_min_age: "7d"
+elasticsearch_ilm_cold_min_age: "30d"
+elasticsearch_ilm_delete_min_age: "90d"
+elasticsearch_ilm_associate_template: true
+elasticsearch_ilm_template_name: "default-ilm-template"
+elasticsearch_ilm_index_patterns:
+  - "logs-*"
+  - "metrics-*"
