@@ -103,7 +103,7 @@
         status_code: [200, 400]
         validate_certs: false
       failed_when: false
-  when: not elasticsearch_standalone | bool or elasticsearch_optimize_single_node | bool
+  when: elasticsearch_standalone | bool or elasticsearch_optimize_single_node | bool
 
 - name: Force shard allocation (Bypass Disk Watermarks for Lab speed)
   ansible.builtin.uri:
@@ -143,6 +143,10 @@
 - name: Deploy Prometheus Elasticsearch Exporter (Exposes metrics at :9114/metrics)
   ansible.builtin.include_tasks: exporter.yml
   when: elasticsearch_metrics_enabled | bool
+
+- name: Configure Index Lifecycle Management (ILM)
+  ansible.builtin.include_tasks: ilm.yml
+  when: elasticsearch_ilm_enabled | bool
 
 # ------------------------------------------------------------------------------
 # Phase 5: Backup & Restore Operations
