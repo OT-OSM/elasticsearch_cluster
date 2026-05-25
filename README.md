@@ -156,5 +156,6 @@ Minimize downtime during a disaster:
 - **Prefixing**: Restored indices are prefixed with `restored-` (configurable via `elasticsearch_restore_prefix`) to allow verification before cutting over.
 
 ## Author
-Modernized for Elasticsearch 9.x production standards by Antigravity.
+**Sneha Joshi**
+
 Originally by Opstree Solutions.
