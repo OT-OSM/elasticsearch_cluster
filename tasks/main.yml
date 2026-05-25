@@ -8,26 +8,32 @@
 # ------------------------------------------------------------------------------
 - name: Configuring common configuration
   ansible.builtin.include_tasks: common.yml
+  tags: ['setup', 'config']
 
 - name: Include OS Specific setup tasks
   ansible.builtin.include_tasks: "es-{{ ansible_os_family }}.yml"
+  tags: ['setup', 'install']
 
 # ------------------------------------------------------------------------------
 # Phase 2: Configuration & Security Bootstrapping
 # ------------------------------------------------------------------------------
 - name: Include configuration tasks
   ansible.builtin.include_tasks: config.yml
+  tags: ['config']
 
 - name: Initialize security keystore and users
   ansible.builtin.include_tasks: keystore.yml
+  tags: ['config', 'security']
 
 - name: Setup MinIO components (Plugins & Keystore)
   ansible.builtin.include_tasks: minio.yml
   when: elasticsearch_backup_enabled | bool
+  tags: ['config', 'backup']
 
 - name: Manage TLS certificates
   ansible.builtin.include_tasks: tls-encryption.yml
   when: elasticsearch_tls_enable | bool
+  tags: ['config', 'security', 'tls']
 
 # ------------------------------------------------------------------------------
 # Phase 3: Service Startup & Verification
@@ -38,9 +44,11 @@
     state: started
     enabled: true
     daemon_reload: true
+  tags: ['service']
 
 - name: Flush handlers to ensure plugins and configs are applied
   ansible.builtin.meta: flush_handlers
+  tags: ['service']
 
 - name: Wait for Elasticsearch API to become ready
   block:
@@ -72,6 +80,7 @@
     - name: Fail with detailed information
       ansible.builtin.fail:
         msg: "Elasticsearch failed to start within the timeout. See logs above for details."
+  tags: ['service', 'health']
 
 # ------------------------------------------------------------------------------
 # Phase 4: API-Based Configuration & Health Stabilization
@@ -104,6 +113,7 @@
         validate_certs: false
       failed_when: false
   when: elasticsearch_standalone | bool or elasticsearch_optimize_single_node | bool
+  tags: ['ha', 'stabilize']
 
 - name: Force shard allocation (Bypass Disk Watermarks for Lab speed)
   ansible.builtin.uri:
@@ -120,6 +130,7 @@
     validate_certs: false
   when: elasticsearch_optimize_single_node | bool
   failed_when: false
+  tags: ['ha', 'stabilize']
 
 - name: Explicitly enable X-Pack Monitoring collection (Required for Metrics)
   ansible.builtin.uri:
@@ -136,18 +147,22 @@
     validate_certs: false
   when: elasticsearch_metrics_enabled | bool
   failed_when: false
+  tags: ['metrics']
 
 - name: Configure security API settings (Users, Trials, SSO)
   ansible.builtin.include_tasks: security_api.yml
   when: elasticsearch_security_enabled | bool
+  tags: ['security']
    
 - name: Deploy Prometheus Elasticsearch Exporter (Exposes metrics at :9114/metrics)
   ansible.builtin.include_tasks: exporter.yml
   when: elasticsearch_metrics_enabled | bool
+  tags: ['exporter', 'metrics']
 
 - name: Configure Index Lifecycle Management (ILM)
   ansible.builtin.include_tasks: ilm.yml
   when: elasticsearch_ilm_enabled | bool
+  tags: ['ilm', 'policies']
 
 # ------------------------------------------------------------------------------
 # Phase 5: Backup & Restore Operations
@@ -155,8 +170,10 @@
 - name: Integrate Minio Backup
   ansible.builtin.include_tasks: backup.yml
   when: elasticsearch_backup_enabled | bool
+  tags: ['backup']
 
 - name: Restore Data from Minio
   ansible.builtin.include_tasks: restore.yml
   when: elasticsearch_restore_enable | bool
+  tags: ['restore', 'recovery', 'ha']
 
