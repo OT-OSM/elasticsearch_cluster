@@ -139,7 +139,7 @@
 
 - name: Configure security API settings (Users, Trials, SSO)
   ansible.builtin.include_tasks: security_api.yml
-   when: elasticsearch_security_enabled | bool
+  when: elasticsearch_security_enabled | bool
    
 - name: Deploy Prometheus Elasticsearch Exporter (Exposes metrics at :9114/metrics)
   ansible.builtin.include_tasks: exporter.yml
