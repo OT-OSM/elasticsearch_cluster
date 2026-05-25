@@ -86,7 +86,7 @@ ansible-playbook -i inventory.ini deploy.yml
 
 ## Accessing & Verifying the Cluster
 
-Below are the key URLs and API endpoints to verify the cluster health, node membership, master coordination, and exporter metrics. Replace `<node-ip>` with any of your cluster node IPs (e.g., `192.168.8.188`, `192.168.8.248`, or `192.168.9.2`).
+Below are the key URLs and API endpoints to verify the cluster health, node membership, master coordination, and exporter metrics. Replace `<node-ip>` with any of your cluster node IPs.
 
 ### 1. Elasticsearch API Verifications (Port 9200)
 
