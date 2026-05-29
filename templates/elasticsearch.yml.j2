@@ -1,0 +1,120 @@
+# ======================== Elasticsearch Configuration =========================
+#
+# NOTE: Elasticsearch comes with reasonable defaults for most settings.
+#       Before you set out to tweak and tune the configuration, make sure you
+#       understand what are you trying to accomplish and the consequences.
+#
+# The primary way of configuring a node is via this file. This template lists
+# the most important settings you may want to configure for a production cluster.
+#
+# Please consult the documentation for further information on configuration options:
+# https://www.elastic.co/guide/en/elasticsearch/reference/index.html
+#
+# ---------------------------------- Cluster -----------------------------------
+#
+# Use a descriptive name for your cluster:
+#
+cluster.name: {{ elasticsearch_cluster_name }}
+#
+# ------------------------------------ Node ------------------------------------
+#
+# Use a descriptive name for the node:
+#
+node.name: "{{ elasticsearch_ip }}"
+
+# Node Roles
+node.roles:
+{% if elasticsearch_node_roles is defined %}
+  {{ elasticsearch_node_roles | to_json }}
+{% elif 'esm' in group_names %}
+  [ master, data_content, data_hot ]
+{% elif 'esd' in group_names %}
+  [ data_content, data_hot ]
+{% elif 'esc' in group_names %}
+  []
+{% else %}
+  [ master, data_content, data_hot, ingest ]
+{% endif %}
+
+#
+# ----------------------------------- Paths ------------------------------------
+#
+# Path to directory where to store the data (separate multiple locations by comma):
+#
+path.data: {{ elasticsearch_data_path }}
+#
+# Path to log files:
+#
+path.logs: {{ elasticsearch_log_path }}
+#
+# ----------------------------------- Memory -----------------------------------
+#
+# Lock the memory on startup:
+#
+bootstrap.memory_lock: {{ elasticsearch_m_lock }}
+#
+# ---------------------------------- Network -----------------------------------
+#
+# Set the bind address to a specific IP (IPv4 or IPv6):
+#
+network.host: 0.0.0.0
+#
+# Set a custom port for HTTP:
+#
+http.port: {{ elasticsearch_http_port }}
+#
+# --------------------------------- Discovery ----------------------------------
+#
+{% if elasticsearch_cluster_enabled | bool %}
+discovery.seed_hosts: [ {% for host in groups[elasticsearch_seed_hosts_group] %}"{{ hostvars[host]['ansible_host'] | default(host) }}"{% if not loop.last %}, {% endif %}{% endfor %} ]
+cluster.initial_master_nodes: [ {% for host in groups[elasticsearch_seed_hosts_group] %}"{{ hostvars[host]['ansible_host'] | default(host) }}"{% if not loop.last %}, {% endif %}{% endfor %} ]
+{% else %}
+discovery.type: single-node
+{% endif %}
+
+#
+# ---------------------------------- Various -----------------------------------
+#
+# Require explicit names when deleting indices:
+#
+action.destructive_requires_name: true
+
+# ---------------------------------- Security ----------------------------------
+#
+xpack.security.enabled: {{ elasticsearch_security_enabled | lower }}
+xpack.security.enrollment.enabled: {{ elasticsearch_enrollment_enabled | lower }}
+xpack.security.authc.token.enabled: false
+
+# HTTP SSL
+xpack.security.http.ssl.enabled: {{ elasticsearch_http_ssl_enabled | lower }}
+{% if elasticsearch_http_ssl_enabled | bool %}
+xpack.security.http.ssl.key: {{ elasticsearch_conf_path }}/certs/{{ elasticsearch_key_name }}
+xpack.security.http.ssl.certificate: {{ elasticsearch_conf_path }}/certs/{{ elasticsearch_certificate_name }}
+xpack.security.http.ssl.certificate_authorities: [ "{{ elasticsearch_conf_path }}/certs/{{ elasticsearch_ca_name }}" ]
+{% endif %}
+
+# Transport SSL
+xpack.security.transport.ssl.enabled: {{ elasticsearch_tls_enable | lower }}
+{% if elasticsearch_tls_enable | bool %}
+xpack.security.transport.ssl.verification_mode: {{ elasticsearch_transport_ssl_verification_mode }}
+xpack.security.transport.ssl.key: {{ elasticsearch_conf_path }}/certs/{{ elasticsearch_key_name }}
+xpack.security.transport.ssl.certificate: {{ elasticsearch_conf_path }}/certs/{{ elasticsearch_certificate_name }}
+xpack.security.transport.ssl.certificate_authorities: [ "{{ elasticsearch_conf_path }}/certs/{{ elasticsearch_ca_name }}" ]
+{% endif %}
+
+# ---------------------------------- S3 / Minio --------------------------------
+#
+s3.client.default.endpoint: "{{ elasticsearch_minio_endpoint }}"
+s3.client.default.protocol: "{{ elasticsearch_minio_protocol }}"
+s3.client.default.region: "{{ elasticsearch_minio_region }}"
+s3.client.default.path_style_access: {{ elasticsearch_minio_path_style_access | lower }}
+{% if elasticsearch_minio_signer_override | default('') != '' %}
+s3.client.default.signer_override: "{{ elasticsearch_minio_signer_override }}"
+{% endif %}
+
+# ------------------------------------------------------------------------------
+# Monitoring & Metrics (Prometheus)
+# ------------------------------------------------------------------------------
+xpack.monitoring.collection.enabled: {{ elasticsearch_metrics_enabled | lower }}
+# Built-in Prometheus exporter is available at /_prometheus/metrics
+

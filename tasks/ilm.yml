@@ -1,0 +1,51 @@
+---
+- name: Create or update Index Lifecycle Management (ILM) policy
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_ilm/policy/{{ elasticsearch_ilm_policy_name }}"
+    method: PUT
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      policy:
+        phases:
+          hot:
+            min_age: "0ms"
+            actions:
+              rollover:
+                max_age: "{{ elasticsearch_ilm_hot_max_age }}"
+                max_size: "{{ elasticsearch_ilm_hot_max_size }}"
+          warm:
+            min_age: "{{ elasticsearch_ilm_warm_min_age }}"
+            actions:
+              forcemerge:
+                max_num_segments: 1
+          cold:
+            min_age: "{{ elasticsearch_ilm_cold_min_age }}"
+            actions: {}
+          delete:
+            min_age: "{{ elasticsearch_ilm_delete_min_age }}"
+            actions:
+              delete: {}
+    status_code: 200
+    validate_certs: false
+  run_once: true
+
+- name: Create or update index template to apply ILM policy
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_index_template/{{ elasticsearch_ilm_template_name }}"
+    method: PUT
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      index_patterns: "{{ elasticsearch_ilm_index_patterns }}"
+      template:
+        settings:
+          index.lifecycle.name: "{{ elasticsearch_ilm_policy_name }}"
+    status_code: [200, 201]
+    validate_certs: false
+  run_once: true
+  when: elasticsearch_ilm_associate_template | bool

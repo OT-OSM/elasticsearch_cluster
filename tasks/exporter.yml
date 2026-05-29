@@ -1,0 +1,37 @@
+---
+# Setup Prometheus Elasticsearch Exporter as a Systemd Service
+
+- name: Ensure exporter directory exists
+  ansible.builtin.file:
+    path: "{{ elasticsearch_exporter_bin_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Download and extract Elasticsearch Exporter
+  ansible.builtin.unarchive:
+    src: "https://github.com/prometheus-community/elasticsearch_exporter/releases/download/v{{ elasticsearch_exporter_version }}/elasticsearch_exporter-{{ elasticsearch_exporter_version }}.linux-amd64.tar.gz"
+    dest: "{{ elasticsearch_exporter_bin_dir }}"
+    remote_src: true
+    extra_opts: [--strip-components=1]
+    creates: "{{ elasticsearch_exporter_bin_dir }}/elasticsearch_exporter"
+    owner: root
+    group: root
+
+- name: Create Systemd service file for Elasticsearch Exporter
+  ansible.builtin.template:
+    src: elasticsearch_exporter.service.j2
+    dest: /etc/systemd/system/elasticsearch_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart elasticsearch_exporter
+
+- name: Ensure Elasticsearch Exporter is enabled and started
+  ansible.builtin.systemd:
+    name: elasticsearch_exporter
+    state: started
+    enabled: true
+    daemon_reload: true
+

@@ -1,0 +1,69 @@
+---
+- name: Verify Minio bucket accessibility (Diagnostic)
+  ansible.builtin.shell: |
+    curl -I -k "{{ elasticsearch_minio_protocol }}://{{ elasticsearch_minio_endpoint }}/minio/health/live"
+  register: bucket_check
+  changed_when: false
+
+- name: Debug Minio Bucket Check
+  ansible.builtin.debug:
+    msg: "Bucket check returned status: {{ bucket_check.stdout_lines[0] if bucket_check.stdout_lines else 'Failed to connect' }}"
+  when: bucket_check is failed or '200' not in bucket_check.stdout
+
+- name: Register Minio snapshot repository
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_snapshot/{{ elasticsearch_snapshot_repo_name }}?verify=false"
+    method: PUT
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      type: s3
+      settings:
+        client: default
+        bucket: "{{ elasticsearch_minio_bucket }}"
+        endpoint: "{{ elasticsearch_minio_endpoint }}"
+        protocol: "{{ elasticsearch_minio_protocol }}"
+    status_code: [200, 201]
+    validate_certs: false
+  register: repo_registration
+  until: repo_registration.status in [200, 201]
+  retries: 3
+  delay: 10
+  run_once: true
+
+- name: Create SLM policy for snapshots
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_slm/policy/{{ elasticsearch_slm_policy_name }}"
+    method: PUT
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    timeout: 120
+    body_format: json
+    body:
+      schedule: "{{ elasticsearch_backup_schedule }}"
+      name: "<{{ elasticsearch_slm_policy_name }}-{now/d}>"
+      repository: "{{ elasticsearch_snapshot_repo_name }}"
+      config:
+        indices: "*"
+        include_global_state: true
+      retention:
+        expire_after: "{{ elasticsearch_backup_retention_days }}"
+        min_count: "{{ elasticsearch_backup_min_count }}"
+        max_count: "{{ elasticsearch_backup_max_count }}"
+    status_code: 200
+    validate_certs: false
+  run_once: true
+
+- name: Execute SLM policy immediately (Trigger Backup)
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_slm/policy/{{ elasticsearch_slm_policy_name }}/_execute"
+    method: POST
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    status_code: [200, 201]
+    validate_certs: false
+  run_once: true

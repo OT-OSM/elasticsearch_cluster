@@ -1,22 +1,135 @@
 ---
-# Static value ####
-es_url: "elasticsearch/elasticsearch-{{ elasticsearch_version }}"
-es_service: "elasticsearch.service"
-es: "elasticsearch"
+# ==============================================================================
+# Elasticsearch Cluster Configuration (Defaults)
+# ==============================================================================
 
-# Static value end #####
-es_jvm_dump: /var/lib/elasticsearch/heap
-data_path: /var/lib/elasticsearch
-log_path: /var/log/elasticsearch
-es_IP: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-zen_host: >-
-  ["{{ groups['esm']
-  | map('extract', hostvars, ['ansible_default_ipv4', 'address'])
-  | join('", "') }}"]
-min_heap: "{{ ansible_memtotal_mb // 2 }}m"
-max_heap: "{{ ansible_memtotal_mb // 2 }}m"
-systemd_path: /usr/lib/systemd/system
-conf: /etc/elasticsearch/
-key: "{{ role_path }}/files/{{ key_name }}"
-certificate: "{{ role_path }}/files/{{ certificate_name }}"
-certificate_auth: "{{ role_path }}/files/{{ certificate_authorities_name }}"
+# ------------------------------------------------------------------------------
+# Version & Software
+# ------------------------------------------------------------------------------
+elasticsearch_version: "9.3.4"
+elasticsearch_name: "elasticsearch"
+elasticsearch_home: "/usr/share/elasticsearch"
+elasticsearch_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+
+# ------------------------------------------------------------------------------
+# Cluster Identity
+# ------------------------------------------------------------------------------
+elasticsearch_cluster_name: "es-cluster"
+elasticsearch_http_port: 9200
+elasticsearch_tcp_port: 9300
+elasticsearch_standalone: false
+
+# ------------------------------------------------------------------------------
+# Resource Management (JVM)
+# ------------------------------------------------------------------------------
+elasticsearch_min_heap: "1g"
+elasticsearch_max_heap: "1g"
+
+# ------------------------------------------------------------------------------
+# Paths & Directories
+# ------------------------------------------------------------------------------
+elasticsearch_jvm_dump: "/var/lib/elasticsearch/heap"
+elasticsearch_data_path: "/var/lib/elasticsearch"
+elasticsearch_log_path: "/var/log/elasticsearch"
+elasticsearch_systemd_path: "/usr/lib/systemd/system"
+elasticsearch_conf_path: "/etc/elasticsearch"
+
+# ------------------------------------------------------------------------------
+# Security & Authentication
+# ------------------------------------------------------------------------------
+elasticsearch_tls_enable: true
+elasticsearch_push_certs: true
+elasticsearch_security_enabled: true
+elasticsearch_enrollment_enabled: true
+elasticsearch_http_ssl_enabled: true
+elasticsearch_transport_ssl_verification_mode: "certificate"
+
+# Custom Administrative User
+elasticsearch_user: "admin"
+elasticsearch_password: "password123"
+elasticsearch_user_roles:
+  - superuser
+
+# Certificates filenames
+elasticsearch_key_name: "node1.key"
+elasticsearch_certificate_name: "node1.crt"
+elasticsearch_ca_name: "ca.crt"
+
+# Source paths (for copy task)
+elasticsearch_key: "{{ elasticsearch_key_name }}"
+elasticsearch_certificate: "{{ elasticsearch_certificate_name }}"
+elasticsearch_certificate_auth: "{{ elasticsearch_ca_name }}"
+
+# ------------------------------------------------------------------------------
+# Networking & Discovery
+# ------------------------------------------------------------------------------
+elasticsearch_seed_hosts_group: "esm"
+elasticsearch_zen_host: >-
+  {% set seed_hosts = groups[elasticsearch_seed_hosts_group] | default(ansible_play_batch) %}
+  {{ seed_hosts | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | list | to_json }}
+
+# ------------------------------------------------------------------------------
+# OS Limits & Tuning
+# ------------------------------------------------------------------------------
+elasticsearch_nofile_limit: "65536"
+elasticsearch_nproc_limit: "5000"
+elasticsearch_swapness: "1"
+elasticsearch_vm_max_count: "262144"
+elasticsearch_m_lock: false
+elasticsearch_metrics_enabled: true
+
+# ------------------------------------------------------------------------------
+# Backup & Snapshot Configuration (Minio/S3)
+# ------------------------------------------------------------------------------
+elasticsearch_backup_enabled: true
+elasticsearch_s3_plugin_name: "repository-s3"
+elasticsearch_slm_policy_name: "daily-snapshots"
+elasticsearch_snapshot_repo_name: "minio_backup"
+
+# RPO: Recovery Point Objective (Backup Frequency)
+elasticsearch_backup_schedule: "0 0 0 * * ?" # Daily at midnight
+# Retention: Data History Requirements
+elasticsearch_backup_retention_days: "30d"
+elasticsearch_backup_min_count: 5
+elasticsearch_backup_max_count: 50
+
+# Minio Connection Details (Override these in group_vars)
+elasticsearch_minio_host: "minio.example.com"
+elasticsearch_minio_port: 9000
+elasticsearch_minio_endpoint: "{{ elasticsearch_minio_host }}:{{ elasticsearch_minio_port }}"
+elasticsearch_minio_access_key: "demo_access_key"
+elasticsearch_minio_secret_key: "demo_secret_key"
+elasticsearch_minio_bucket: "demo-bucket"
+elasticsearch_minio_protocol: "https"
+elasticsearch_minio_region: "us-east-1"
+elasticsearch_minio_path_style_access: true
+
+# ------------------------------------------------------------------------------
+# Restore Configuration (Disabled by default for safety)
+# ------------------------------------------------------------------------------
+elasticsearch_restore_enable: false
+elasticsearch_snapshot_name: "" # If empty, the role can be programmed to find the latest
+elasticsearch_restore_indices: "*"
+elasticsearch_restore_prefix: "restored-"
+
+# ------------------------------------------------------------------------------
+# Prometheus Exporter Settings
+# ------------------------------------------------------------------------------
+elasticsearch_exporter_version: "1.7.0"
+elasticsearch_exporter_bin_dir: "/opt/elasticsearch_exporter"
+
+# ------------------------------------------------------------------------------
+# Index Lifecycle Management (ILM) Settings
+# ------------------------------------------------------------------------------
+elasticsearch_ilm_enabled: true
+elasticsearch_ilm_policy_name: "default-lifecycle-policy"
+elasticsearch_ilm_hot_max_age: "7d"
+elasticsearch_ilm_hot_max_size: "50gb"
+elasticsearch_ilm_warm_min_age: "7d"
+elasticsearch_ilm_cold_min_age: "30d"
+elasticsearch_ilm_delete_min_age: "90d"
+elasticsearch_ilm_associate_template: true
+elasticsearch_ilm_template_name: "default-ilm-template"
+elasticsearch_ilm_index_patterns:
+  - "logs-*"
+  - "metrics-*"

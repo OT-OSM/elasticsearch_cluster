@@ -42,13 +42,13 @@
 #
 #<domain>      <type>  <item>         <value>
 
-{{ es }}        soft     nofile          {{ nofile_limit }}
-{{ es }}        hard     nofile          {{ nofile_limit }}
-{{ es }}        soft     nproc           {{ nproc_limit }}
-{{ es }}        hard     nproc           {{ nproc_limit }}
+{{ elasticsearch_name }}        soft     nofile          {{ elasticsearch_nofile_limit }}
+{{ elasticsearch_name }}        hard     nofile          {{ elasticsearch_nofile_limit }}
+{{ elasticsearch_name }}        soft     nproc           {{ elasticsearch_nproc_limit }}
+{{ elasticsearch_name }}        hard     nproc           {{ elasticsearch_nproc_limit }}
 
-{{ es }} soft memlock unlimited
-{{ es }} hard memlock unlimited
+{{ elasticsearch_name }} soft memlock unlimited
+{{ elasticsearch_name }} hard memlock unlimited
 #
 
 #*               soft    core            0
@@ -62,4 +62,3 @@
 #@student        -       maxlogins       4
 
 # End of file
-

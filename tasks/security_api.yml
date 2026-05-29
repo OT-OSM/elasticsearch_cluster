@@ -1,0 +1,36 @@
+---
+
+- name: Create dedicated monitoring user (Production Hardening)
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_security/user/{{ elasticsearch_monitoring_user }}"
+    method: POST
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      password: "{{ elasticsearch_monitoring_password }}"
+      roles: ["monitor", "remote_monitoring_agent", "viewer"]
+      full_name: "Production Monitoring Service"
+    status_code: [200, 204, 403]
+  when: elasticsearch_monitoring_user is defined
+
+- name: Configure OIDC Role Mapping for Keycloak SSO
+  ansible.builtin.uri:
+    url: "{{ elasticsearch_api_protocol }}://{{ elasticsearch_api_host }}:{{ elasticsearch_http_port }}/_security/role_mapping/oidc_keycloak_mapping"
+    method: POST
+    user: "{{ elasticsearch_user }}"
+    password: "{{ elasticsearch_password }}"
+    force_basic_auth: true
+    body_format: json
+    body:
+      roles: ["superuser"]
+      enabled: true
+      rules:
+        all:
+          - field: { realm.name: "oidc_keycloak" }
+    status_code: [200, 201]
+  when: elasticsearch_oidc_enable | bool
+  loop: "{{ elasticsearch_oidc_realms | default([]) }}"
+  loop_control:
+    loop_var: realm
